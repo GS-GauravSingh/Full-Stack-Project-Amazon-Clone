@@ -1,6 +1,7 @@
 import React from 'react'
-import amazonlogo from "./assets/AmazonLogo_2000x604.png"
-import indiaFlag from "./assets/india-flag-icon.svg"
+import amazonlogo from "../../assets/AmazonLogo_2000x604.png"
+import indiaFlag from "../../assets/india-flag-icon.svg"
+import { Link } from 'react-router-dom'
 
 function DesktopHeader() {
     return (
@@ -11,10 +12,12 @@ function DesktopHeader() {
 
                 {/* Left - Header - Amazon Logo and Location */}
                 <div className='flex items-center'>
-                    <div className='flex items-center border border-transparent hover:border-slate-300 rounded-sm mx-1 my-1 min-w-28 object-contain' style={{padding: "0.6rem"}}>
-                        <img src={amazonlogo} className='w-26 h-7' />
-                        <span className='pb-2'>.in</span>
-                    </div>
+                    <Link to="/">
+                        <div className='flex items-center border border-transparent hover:border-slate-300 rounded-sm mx-1 my-1 min-w-28 object-contain cursor-pointer' style={{ padding: "0.6rem" }}>
+                            <img src={amazonlogo} className='w-26 h-7' />
+                            <span className='pb-2'>.in</span>
+                        </div>
+                    </Link>
 
                     <div className='flex items-end border border-transparent hover:border-slate-300 rounded-sm my-1 px-2 py-1 gap-1'>
                         <div className=''>
@@ -63,17 +66,19 @@ function DesktopHeader() {
                     </div>
 
                     {/* Add to Cart Option */}
-                    <div className='flex items-center px-2 py-1 border border-transparent hover:border-slate-300 rounded-sm'>
-                        <span>
-                            <i className="fa-solid fa-cart-shopping text-2xl"></i>
-                        </span>
-                        <span className='font-bold ml-2 text-xl text-orange-400'>0</span>
+                    <div className='flex items-center px-2 py-1 border border-transparent hover:border-slate-300 rounded-sm cursor-pointer'>
+                        <Link to="/checkout">
+                            <span>
+                                <i className="fa-solid fa-cart-shopping text-2xl"></i>
+                            </span>
+                            <span className='font-bold ml-2 text-xl text-orange-400'>0</span>
+                        </Link>
                     </div>
                 </div>
             </div>
 
             {/* Secondary Header */}
-            <div className='bg-header-secondary-bgcolor text-white flex items-center' style={{paddingBottom: "1px", marginTop: "3.9rem"}}> 
+            <div className='bg-header-secondary-bgcolor text-white flex items-center' style={{ paddingBottom: "1px", marginTop: "3.9rem" }}>
 
                 {/* Hamburger Menu */}
                 <div className='ml-2 border border-transparent hover:border-slate-300 p-2 whitespace-nowrap'>

@@ -1,5 +1,5 @@
 import React from 'react'
-import DisplayStarRating from './DisplayStarRating';
+import DisplayStarRating from '../StarRating/DisplayStarRating';
 
 function Product(props) {
 

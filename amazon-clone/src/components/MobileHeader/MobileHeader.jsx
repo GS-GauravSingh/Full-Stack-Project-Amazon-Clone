@@ -1,5 +1,6 @@
 import React from 'react'
-import amazonlogo from "./assets/AmazonLogo_2000x604.png"
+import amazonlogo from "../../assets/AmazonLogo_2000x604.png"
+import { Link } from 'react-router-dom';
 
 function MobileHeader() {
     return (
@@ -17,10 +18,12 @@ function MobileHeader() {
                             <i className="fa-solid fa-bars text-white text-xl"></i>
                         </span>
 
-                        {/* Amazon Logo */}
-                        <div className=''>
-                            <img src={amazonlogo} className='h-6 w-20' />
-                        </div>
+                        <Link to="/">
+                            {/* Amazon Logo */}
+                            <div className=''>
+                                <img src={amazonlogo} className='h-6 w-20' />
+                            </div>
+                        </Link>
                     </div>
 
                     <div className='flex justify-center items-center gap-5'>
@@ -41,10 +44,12 @@ function MobileHeader() {
 
                         {/* Add to cart */}
                         <div>
-                            <span>
-                                <i className="fa-solid fa-cart-shopping text-xl"></i>
-                            </span>
-                            <span className='font-bold ml-2 text-xl text-orange-400 cursor-default'>0</span>
+                            <Link to="/checkout">
+                                <span>
+                                    <i className="fa-solid fa-cart-shopping text-xl"></i>
+                                </span>
+                                <span className='font-bold ml-2 text-xl text-orange-400 cursor-default'>0</span>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -80,8 +85,8 @@ function MobileHeader() {
 
             {/* Secondary Header */}
             <div className='bg-header-secondary-bgcolor text-white px-2.5 py-2 flex items-center'>
-            <i className="fa-solid fa-location-dot text-sm"></i>
-            <span className='text-slate-200 whitespace-nowrap ml-2 text-xs'>Deliver to India</span>
+                <i className="fa-solid fa-location-dot text-sm"></i>
+                <span className='text-slate-200 whitespace-nowrap ml-2 text-xs'>Deliver to India</span>
             </div>
         </header>
     )

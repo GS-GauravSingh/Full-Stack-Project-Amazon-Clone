@@ -1,17 +1,18 @@
 import React from 'react'
-import bannerImage1 from './assets/Clothing_3000x1200.jpg'
-import bannerImage2 from './assets/GroceryItems_3000x1200.jpg'
-import bannerImage3 from './assets/HomeShoppingItems_3000x1200.jpg'
-import bannerImage4 from './assets/Shoes_3000x1200.jpg'
-import bannerImage5 from './assets/TopDeals_3000x1200.jpg'
-import Product from './Product'
-import bookImage1 from './assets/BookImage1.jpg'
-import bookImage2 from './assets/BookImage2.jpg'
-import bookImage3 from './assets/BookImage3.jpg'
-import bookImage4 from './assets/BookImage4.jpg'
-import bookImage5 from './assets/BookImage5.jpg'
-import bookImage6 from './assets/BookImage6.jpg'
-import samsungMonitor1 from './assets/SamsungMonitor1.jpg'
+
+import bannerImage1 from '../../assets/Clothing_3000x1200.jpg'
+import bannerImage2 from '../../assets/GroceryItems_3000x1200.jpg'
+import bannerImage3 from '../../assets/HomeShoppingItems_3000x1200.jpg'
+import bannerImage4 from '../../assets/Shoes_3000x1200.jpg'
+import bannerImage5 from '../../assets/TopDeals_3000x1200.jpg'
+import Product from '../Product/Product'
+import bookImage1 from '../../assets/BookImage1.jpg'
+import bookImage2 from '../../assets/BookImage2.jpg'
+import bookImage3 from '../../assets/BookImage3.jpg'
+import bookImage4 from '../../assets/BookImage4.jpg'
+import bookImage5 from '../../assets/BookImage5.jpg'
+import bookImage6 from '../../assets/BookImage6.jpg'
+import samsungMonitor1 from '../../assets/SamsungMonitor1.jpg'
 
 function Home() {
     return (
@@ -85,7 +86,7 @@ function Home() {
 
                     {/* Products */}
                     <div>
-                        <Product title="Samsung 34-inches 86.42cm LED Odyssey G5 Ultra WQHD, 165 Hz, 1ms, 1000R Curved Gaming Monitor, HDR10, AMD FreeSync Premium -LC34G55TWWWXXL, Black, 3440 X 1440 (WQHD) Pixels" price="36,999" image="https://m.media-amazon.com/images/I/71IYBPoc8pL._SL1500_.jpg" rating="4" />
+                        <Product title="Samsung 57-inch(144.87cm) Odyssey Neo G9 Dual QHD, 240Hz, 1ms Curved Gaming Monitor, USB Hub, HAS, Quantum Mini LED, HDR1000, Smart TV, AMD FreeSync Premium Pro (LS57CG950NWXXL, Black)" price="2,79,999" image={samsungMonitor1} rating="4" />
                     </div>
                 </div>
             </div>

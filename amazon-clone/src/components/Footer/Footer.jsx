@@ -1,10 +1,17 @@
 import React from 'react'
-import amazonlogo from "./assets/AmazonLogo_2000x604.png"
-import indiaFlag from "./assets/india-flag-icon.svg"
+import amazonlogo from "../../assets/AmazonLogo_2000x604.png"
+import indiaFlag from "../../assets/india-flag-icon.svg"
+import { Link } from 'react-router-dom'
 
 
 
 function Footer() {
+
+  // Function
+  function moveToTop(){
+    window.scrollTo({top: "0", left: "0"});
+  }
+
   return (
     <footer>
 
@@ -18,8 +25,8 @@ function Footer() {
       </div>
 
       {/* Back to Top */}
-      <div className='bg-back-to-top-bgcolor'>
-        <button className='w-full text-center p-4 text-white font-medium'>Back to top</button>
+      <div className='bg-back-to-top-bgcolor hover:bg-opacity-95'>
+        <button className='w-full text-center p-4 text-white font-medium' onClick={moveToTop}>Back to top</button>
       </div>
 
       {/* Links */}
