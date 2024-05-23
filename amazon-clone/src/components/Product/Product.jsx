@@ -1,16 +1,10 @@
 import React from 'react'
 import DisplayStarRating from '../StarRating/DisplayStarRating';
 
-function Product(props) {
-
-    const productTitle = props.title;
-    const productPrice = props.price;
-    const productImage = props.image;
-    const productRating = props.rating;
-
+function Product({ title, price, image, rating, addOrRemoveToCart }) {
 
     return (
-        <div className='flex-grow flex-shrink basis-72'>
+        <div className='flex-grow flex-shrink basis-72' >
             {/* Product Card */}
             <div className='z-10 bg-white p-2'>
 
@@ -19,21 +13,21 @@ function Product(props) {
 
                     {/* Title, Price and Rating */}
                     <div>
-                        <p className='max-h-fit min-h-16'> {productTitle} </p>
-                        <p className='mt-1'> <strong> ₹{productPrice} </strong> </p>
-                        <DisplayStarRating star={productRating} />
+                        <p className='max-h-fit min-h-16'> {title} </p>
+                        <p className='mt-1'> <strong> ₹ {price} </strong> </p>
+                        <DisplayStarRating star={rating} />
                     </div>
 
                     {/* Product Image */}
                     <div className='flex justify-center my-4'>
                         <div className='flex h-72'>
-                            <img src={productImage} className='w-full object-contain' />
+                            <img src={image} className='w-full object-contain' />
                         </div>
                     </div>
 
                     {/* Add to Cart Button */}
                     <div className='bg-orange-500 text-center text-white font-semibold rounded-md mt-2'>
-                        <button className='w-full p-2 border-none outline-none'>Add to Cart</button>
+                        <button className='w-full p-2 border-none outline-none'> {addOrRemoveToCart} </button>
                     </div>
 
                 </div>

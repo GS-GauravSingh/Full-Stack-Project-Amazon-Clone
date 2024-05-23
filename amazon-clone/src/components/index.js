@@ -9,11 +9,13 @@ import Footer from "./Footer/Footer"
 import Home from "./Home/Home"
 import Product from "./Product/Product"
 import DisplayStarRating from "./StarRating/DisplayStarRating"
-import ProductCheckout from "./ProductCheckout/ProductCheckout"
+import ProductCheckout from "./ProductCheckoutPage/ProductCheckout"
 import FooterSignIn from "./FooterSignIn/FooterSignIn"
+import SubTotal from "./SubTotal/SubTotal"
+
 
 // Export all the components like this.
-export {DesktopHeader, MobileHeader, Footer, Home, Product, DisplayStarRating, ProductCheckout, FooterSignIn};
+export {DesktopHeader, MobileHeader, Footer, Home, Product, DisplayStarRating, ProductCheckout, FooterSignIn, SubTotal};
 
 
 // After that you can import all these components like this: 
