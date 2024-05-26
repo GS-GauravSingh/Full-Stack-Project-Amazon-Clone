@@ -1,9 +1,14 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import amazonlogo from "../../assets/AmazonLogo_2000x604.png"
 import indiaFlag from "../../assets/india-flag-icon.svg"
 import { Link } from 'react-router-dom'
+import useProductContext from '../../context/ProductContext/useProductContext'
 
 function DesktopHeader() {
+
+    // Accessing the Product Context. Used to access the total number of items present in the cart. So, that we can display the product count (total items in the cart) in the header.
+    const { cart } = useProductContext();
+
     return (
         <header className='hidden customBreakpointForMobileHeader:block'>
 
@@ -71,7 +76,17 @@ function DesktopHeader() {
                             <span>
                                 <i className="fa-solid fa-cart-shopping text-2xl"></i>
                             </span>
-                            <span className='font-bold ml-2 text-xl text-orange-400'>0</span>
+                            <span className='font-bold ml-2 text-xl text-orange-400'> {cart?.length} </span>
+                            {/* 
+                                The question mark (?) in cart?.length is the `optional chaining` operator in JavaScript. Basically, it is used to handle errors.
+
+                                It works like this,
+                                if (cart !== null && cart !== undefined) {
+                                    console.log(cart.length);
+                                } else {
+                                    console.log('Cart is undefined or null');
+                                } 
+                            */}
                         </Link>
                     </div>
                 </div>

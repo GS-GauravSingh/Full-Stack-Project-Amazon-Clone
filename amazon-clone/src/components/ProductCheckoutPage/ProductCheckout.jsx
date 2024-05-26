@@ -1,9 +1,14 @@
 import React from 'react'
 import SubTotal from '../SubTotal/SubTotal'
 import { Link } from 'react-router-dom'
-import Product from '../Product/Product'
+import ProductCart from '../Product/ProductCart'
+import useProductContext from '../../context/ProductContext/useProductContext'
 
 function ProductCheckout() {
+
+    // Acessing or Consuming the context to render products added to cart.
+    const { cart } = useProductContext();
+
     return (
         <>
             {/* Parent Container */}
@@ -35,24 +40,20 @@ function ProductCheckout() {
                     </div>
 
                     {/* Parent Container for Cart Items. */}
-                    <div className='bg-gray-200 flex flex-col gap-4 pt-4 md:flex-row md:flex-wrap'>
+                    <div className='bg-gray-200 flex flex-col gap-4 pt-4'>
 
-                        <Product title="Samsung Galaxy Z Flip5 5G AI Smartphone (Mint, 8GB RAM, 512GB Storage)" price="1,09,999" image="https://m.media-amazon.com/images/I/61Tl1z+Hn0L._SX679_.jpg" rating="4" addOrRemoveToCart="Remove From Cart" />
-                        <Product title="Samsung Galaxy Z Flip5 5G AI Smartphone (Mint, 8GB RAM, 512GB Storage)" price="1,09,999" image="https://m.media-amazon.com/images/I/61Tl1z+Hn0L._SX679_.jpg" rating="4" addOrRemoveToCart="Remove From Cart" />
-                        <Product title="Samsung Galaxy Z Flip5 5G AI Smartphone (Mint, 8GB RAM, 512GB Storage)" price="1,09,999" image="https://m.media-amazon.com/images/I/61Tl1z+Hn0L._SX679_.jpg" rating="4" addOrRemoveToCart="Remove From Cart" />
-                        <Product title="Samsung Galaxy Z Flip5 5G AI Smartphone (Mint, 8GB RAM, 512GB Storage)" price="1,09,999" image="https://m.media-amazon.com/images/I/61Tl1z+Hn0L._SX679_.jpg" rating="4" addOrRemoveToCart="Remove From Cart" />
-                        <Product title="Samsung Galaxy Z Flip5 5G AI Smartphone (Mint, 8GB RAM, 512GB Storage)" price="1,09,999" image="https://m.media-amazon.com/images/I/61Tl1z+Hn0L._SX679_.jpg" rating="4" addOrRemoveToCart="Remove From Cart" />
-                        <Product title="Samsung Galaxy Z Flip5 5G AI Smartphone (Mint, 8GB RAM, 512GB Storage)" price="1,09,999" image="https://m.media-amazon.com/images/I/61Tl1z+Hn0L._SX679_.jpg" rating="4" addOrRemoveToCart="Remove From Cart" />
-                        <Product title="Samsung Galaxy Z Flip5 5G AI Smartphone (Mint, 8GB RAM, 512GB Storage)" price="1,09,999" image="https://m.media-amazon.com/images/I/61Tl1z+Hn0L._SX679_.jpg" rating="4" addOrRemoveToCart="Remove From Cart" />
-                        <Product title="Samsung Galaxy Z Flip5 5G AI Smartphone (Mint, 8GB RAM, 512GB Storage)" price="1,09,999" image="https://m.media-amazon.com/images/I/61Tl1z+Hn0L._SX679_.jpg" rating="4" addOrRemoveToCart="Remove From Cart" />
-                        <Product title="Samsung Galaxy Z Flip5 5G AI Smartphone (Mint, 8GB RAM, 512GB Storage)" price="1,09,999" image="https://m.media-amazon.com/images/I/61Tl1z+Hn0L._SX679_.jpg" rating="4" addOrRemoveToCart="Remove From Cart" />
-                        <Product title="Samsung Galaxy Z Flip5 5G AI Smartphone (Mint, 8GB RAM, 512GB Storage)" price="1,09,999" image="https://m.media-amazon.com/images/I/61Tl1z+Hn0L._SX679_.jpg" rating="4" addOrRemoveToCart="Remove From Cart" />
-                        <Product title="Samsung Galaxy Z Flip5 5G AI Smartphone (Mint, 8GB RAM, 512GB Storage)" price="1,09,999" image="https://m.media-amazon.com/images/I/61Tl1z+Hn0L._SX679_.jpg" rating="4" addOrRemoveToCart="Remove From Cart" />
-                        <Product title="Samsung Galaxy Z Flip5 5G AI Smartphone (Mint, 8GB RAM, 512GB Storage)" price="1,09,999" image="https://m.media-amazon.com/images/I/61Tl1z+Hn0L._SX679_.jpg" rating="4" addOrRemoveToCart="Remove From Cart" />
-                        <Product title="Samsung Galaxy Z Flip5 5G AI Smartphone (Mint, 8GB RAM, 512GB Storage)" price="1,09,999" image="https://m.media-amazon.com/images/I/61Tl1z+Hn0L._SX679_.jpg" rating="4" addOrRemoveToCart="Remove From Cart" />
-                        <Product title="Samsung Galaxy Z Flip5 5G AI Smartphone (Mint, 8GB RAM, 512GB Storage)" price="1,09,999" image="https://m.media-amazon.com/images/I/61Tl1z+Hn0L._SX679_.jpg" rating="4" addOrRemoveToCart="Remove From Cart" />
-                        <Product title="Samsung Galaxy Z Flip5 5G AI Smartphone (Mint, 8GB RAM, 512GB Storage)" price="1,09,999" image="https://m.media-amazon.com/images/I/61Tl1z+Hn0L._SX679_.jpg" rating="4" addOrRemoveToCart="Remove From Cart" />
-                        <Product title="Samsung Galaxy Z Flip5 5G AI Smartphone (Mint, 8GB RAM, 512GB Storage)" price="1,09,999" image="https://m.media-amazon.com/images/I/61Tl1z+Hn0L._SX679_.jpg" rating="4" addOrRemoveToCart="Remove From Cart" />
+                        {/* <ProductCart title="Samsung Galaxy Z Flip5 5G AI Smartphone (Mint, 8GB RAM, 512GB Storage)" price="1,09,999" image="https://m.media-amazon.com/images/I/61Tl1z+Hn0L._SX679_.jpg" rating="4" /> */}
+
+                        {/* Rendering Products added to cart. */}
+                        {
+                            cart.map(function (cartItem) {
+                                // 'cartItem' is a Object.
+                                return (
+                                    <ProductCart id={cartItem.productID} title={cartItem.productTitle} price={cartItem.productPrice} image={cartItem.productImage} rating={cartItem.productRating} />
+                                )
+                            })
+                        }
+
                     </div>
 
                 </div>
