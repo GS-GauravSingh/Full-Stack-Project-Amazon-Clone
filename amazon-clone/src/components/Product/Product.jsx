@@ -1,4 +1,4 @@
-import React, { useId } from 'react'
+import React, { useEffect, useId } from 'react'
 import DisplayStarRating from '../StarRating/DisplayStarRating';
 import useProductContext from '../../context/ProductContext/useProductContext'
 
@@ -8,27 +8,7 @@ function Product({ title, price, image, rating }) {
     const id = useId();
 
     // Using ProductContext to store data when user click on `add to cart` button.
-    const { cart, setCart } = useProductContext();
-    function addToCart(event) {
-
-        event.preventDefault();
-
-        const newProductDetails = {
-            productID: id,
-            productTitle: title,
-            productPrice: price,
-            productImage: image,
-            productRating: rating
-
-        };
-
-
-        setCart([
-            ...cart,
-            newProductDetails
-        ]);
-    }
-
+    const { addToCart } = useProductContext();
 
     return (
         <div className='flex-grow flex-shrink basis-72' >
@@ -56,7 +36,17 @@ function Product({ title, price, image, rating }) {
 
                 {/* Add to Cart Button */}
                 <div className='bg-yellow-400 hover:bg-amber-400 text-center text-black font-semibold rounded-md mt-2'>
-                    <button className='w-full p-2 border-none outline-none' onClick={addToCart}> Add to Cart </button>
+                    <button className='w-full p-2 border-none outline-none' onClick={() => {
+                        const newProductDetails = {
+                            productID: id,
+                            productTitle: title,
+                            productPrice: price,
+                            productImage: image,
+                            productRating: rating
+
+                        };
+                        addToCart(newProductDetails);
+                    }}> Add to Cart </button>
                 </div>
 
 

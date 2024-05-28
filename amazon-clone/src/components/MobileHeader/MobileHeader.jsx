@@ -6,7 +6,8 @@ import useProductContext from '../../context/ProductContext/useProductContext'
 function MobileHeader() {
 
     // Accessing the Product Context. Used to access the total number of items present in the cart. So, that we can display the product count (total items in the cart) in the header.
-    const { cart } = useProductContext();
+    const { cartLength } = useProductContext();
+
 
     return (
         <header className='customBreakpointForMobileHeader:hidden'>
@@ -53,7 +54,7 @@ function MobileHeader() {
                                 <span>
                                     <i className="fa-solid fa-cart-shopping text-xl"></i>
                                 </span>
-                                <span className='font-bold ml-2 text-xl text-orange-400 cursor-default'> {cart.length} </span>
+                                <span className='font-bold ml-2 text-xl text-orange-400 cursor-default'> {cartLength()} </span>
                             </Link>
                         </div>
                     </div>
