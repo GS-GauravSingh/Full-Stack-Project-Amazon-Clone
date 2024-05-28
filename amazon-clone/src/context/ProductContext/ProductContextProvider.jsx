@@ -1,5 +1,5 @@
 // To create a "context provider", you just need to wrap all the components who wants access to shared data inside the context object you have created.
-import React from "react";
+import React, { useEffect } from "react";
 import ProductContext from "./ProductContext";
 import { useState } from "react";
 
@@ -48,6 +48,30 @@ function ProductContextProvider({ children }) {
     function cartLength() {
         return cart?.length;
     }
+
+    // Accessing and Storing Context Data in the Browser's Local Storage.
+    // Accessing data from the browser's local storage.
+    useEffect(function () {
+
+        // The 'localStorage' object allows you to save key/value pairs in the browser.
+        // This actually stored data in the form of the string.
+        // So, it returns data in the from of string, so we need to parse in into a JSON format (JSON can be in the form of array's).
+        const productsArr = JSON.parse(localStorage.getItem("cart"));
+        // 'productsArr' itself is an array of objects.
+
+        if (productsArr.length > 0) {
+            setCart(productsArr);
+        }
+    }, []);
+    
+
+    // Using Browser's Local Storage for storing the Context Data from preserving state when browser refresehes.
+    useEffect(function(){
+
+        // Convert the array of objects to a string and save it to localStorage
+        // It accepts key and value pair in string format.
+        localStorage.setItem("cart", JSON.stringify(cart));
+    }, [addToCart, removeFromCart])
 
     return (
 

@@ -49,7 +49,9 @@ function ProductCheckout() {
                             cart.map(function (cartItem) {
                                 // 'cartItem' is a Object.
                                 return (
-                                    <ProductCart id={cartItem.productID} title={cartItem.productTitle} price={cartItem.productPrice} image={cartItem.productImage} rating={cartItem.productRating} />
+                                    <div key={cartItem.productID}>
+                                        <ProductCart id={cartItem.productID} title={cartItem.productTitle} price={cartItem.productPrice} image={cartItem.productImage} rating={cartItem.productRating} />
+                                    </div>
                                 )
                             })
                         }
