@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import useProductContext from '../../context/ProductContext/useProductContext'
 
-// 'react-currency-format' is a React library used for formatting and displaying currency values.
-import CurrencyFormat from 'react-currency-format';
-
 
 function SubTotal() {
 
@@ -13,7 +10,6 @@ function SubTotal() {
   // State variable to calculate and store total price of all products added to cart.
   const [totalCost, setTotalCost] = useState(0);
 
-  // State varible to store the proce in indian format.
   // You can convert the numbers into currencies using the Intl.NumberFormat() method in JavaScript. For example, 14340 would be $14,340.00 (US Dollars) or ₹14,340.00 (Rupees) or €14.340,00 (Euross) and so on.
   let indianRupee = Intl.NumberFormat("en-IN", {
     style: "currency",
