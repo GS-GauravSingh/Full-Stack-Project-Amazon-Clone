@@ -1,5 +1,5 @@
 import React from 'react'
-import Carousel from './Carousel'
+import HomeCarousel from './HomeCarousel'
 import Product from '../Product/Product'
 
 function Home() {
@@ -11,7 +11,7 @@ function Home() {
 
                 {/* Banner Image Container */}
                 <div className=''>
-                    <Carousel />
+                    <HomeCarousel />
                 </div>
 
                 {/* Products Listing */}
@@ -42,9 +42,9 @@ function Home() {
 
                     {/* Products */}
                     <div>
-                        
+
                         <Product title="Samsung 49-inch(124.4cm) Odyssey OLED G9 Dual QHD, 240Hz, 0.03ms Curved Gaming Monitor, USB Hub, HAS, Neo Quantum Processor, Smart TV, AMD FreeSync Premium Pro (LS49CG950SWXXL, Black)" price="1,79,999" image="https://m.media-amazon.com/images/I/81nH13XWRHL._SX522_.jpg" rating="3.5" />
-                        
+
                     </div>
 
                     {/* Products */}
