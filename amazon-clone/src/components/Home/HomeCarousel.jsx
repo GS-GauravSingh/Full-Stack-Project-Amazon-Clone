@@ -55,12 +55,12 @@ function HomeCarousel() {
                 </div>
 
                 {/* Left Button */}
-                <button className='absolute text-[0.8rem] sm:text-xl md:text-3xl rounded-md flex items-center justify-center hover:outline-2 hover:outline hover:outline-white hover:border-2 hover:border-[#008296]' style={{ top: "2px", left: "0.2rem", height: "calc(100% - 15.3vw)", width: "5rem" }} onClick={moveToPrevImage}>
+                <button className='absolute text-[0.8rem] sm:text-xl md:text-3xl rounded-md flex items-center justify-center hover:outline-2 hover:outline hover:outline-white hover:border-2 hover:border-[#008296] w-8 sm:w-12 md:w-20' style={{ top: "2px", left: "0.2rem", height: "calc(100% - 15.3vw)" }} onClick={moveToPrevImage}>
                     <i className="fa-solid fa-chevron-left"></i>
                 </button>
 
                 {/* Right Button */}
-                <button className='absolute z-10 text-[0.8rem] sm:text-xl md:text-3xl rounded-md flex items-center justify-center hover:outline-2 hover:outline hover:outline-white hover:border-2 hover:border-[#008296]' style={{ top: "2px", right: "0.2rem", height: "calc(100% - 15.3vw)", width: "5rem" }} onClick={moveToNextImage}>
+                <button className='absolute z-10 text-[0.8rem] sm:text-xl md:text-3xl rounded-md flex items-center justify-center hover:outline-2 hover:outline hover:outline-white hover:border-2 hover:border-[#008296] w-8 sm:w-12 md:w-20' style={{ top: "2px", right: "0.2rem", height: "calc(100% - 15.3vw)"}} onClick={moveToNextImage}>
                     <i className="fa-solid fa-chevron-right"></i>
                 </button>
 

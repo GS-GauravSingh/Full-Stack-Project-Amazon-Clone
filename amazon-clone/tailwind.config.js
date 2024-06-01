@@ -18,6 +18,10 @@ export default {
         "customBreakpointForMobileHeader": "1024px",
         "customBreakpointForFooter": "798px"
       },
+
+      boxShadow:{
+        "signUpInputBoxShadow": "0px 0px 5px #007185"
+      }
     },
   },
   plugins: [

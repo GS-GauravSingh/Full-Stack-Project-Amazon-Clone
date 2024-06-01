@@ -38,7 +38,9 @@ function MobileHeader() {
                         <div className='flex items-center gap-1 cursor-pointer'>
 
                             <div className='flex text-xs'>
-                                Sign in
+                                <Link to="/signin">
+                                    <span className='text-blue-500'>Sign in</span>
+                                </Link>
                                 <span style={{ marginLeft: "4px", marginBottom: "0.1rem", fontSize: "10px" }} className=''> <i class="fa-solid fa-angle-right"></i> </span>
                             </div>
 

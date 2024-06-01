@@ -10,7 +10,7 @@ function DesktopHeader() {
     const { cartLength } = useProductContext();
 
     return (
-        <header className='hidden customBreakpointForMobileHeader:block'>
+        <header className='hidden customBreakpointForMobileHeader:block cursor-pointer'>
 
             {/* Primary Header */}
             <div className='bg-header-primary-bgcolor text-white flex items-center fixed left-0 right-0 top-0 z-50'>
@@ -49,7 +49,7 @@ function DesktopHeader() {
                 <div className='flex gap-1'>
 
                     {/* Language */}
-                    <div className='flex border border-transparent hover:border-slate-300 rounded-sm px-2 '>
+                    <div className='flex border border-transparent hover:border-slate-300 rounded-sm px-2'>
                         <img src={indiaFlag} className='w-8' />
                         <select className='bg-transparent font-bold outline-none border-none'>
                             <option>EN</option>
@@ -58,7 +58,9 @@ function DesktopHeader() {
 
                     {/* Sign In Option */}
                     <div className='flex flex-col border border-transparent hover:border-slate-300 rounded-sm py-1 px-2'>
-                        <span className='text-sm ml-1 whitespace-nowrap'>Hello, sign in</span>
+                        <Link to='/signin'>
+                            <span className='text-sm ml-1 whitespace-nowrap'>Hello, <span className='p-0 text-blue-400 cursor-pointer'>sign in</span></span>
+                        </Link>
                         <select className='bg-transparent border-none outline-none font-bold'>
                             <option>Account & Lists</option>
                         </select>

@@ -5,27 +5,37 @@ import './index.css'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { Home, ProductCheckout } from './components'
 import ProductContextProvider from './context/ProductContext/ProductContextProvider'
+import SignUp from './components/SignUp/SignUp'
+import SignIn from './components/SignIn/SignIn'
 
 // The "createBrowserRouter" function, allows you to define the paths and specify which component to render when the application is at a particular path.
 const router = createBrowserRouter(
 
   createRoutesFromElements(
-    <Route path="/" element={
-      <ProductContextProvider>
-        {/* Wrapping the Layout component inside context provider allow the Layout components and all the components that are rendering inside Layout can access the context data. */}
-        <Layout />
-      </ProductContextProvider>
-    }>
+    <>
+      <Route path="/" element={
+        <ProductContextProvider>
+          {/* Wrapping the Layout component inside context provider allow the Layout components and all the components that are rendering inside Layout can access the context data. */}
+          <Layout />
+        </ProductContextProvider>
+      }>
 
-      {/* Nesting or Children Components Rendering */}
-      {/* All these children routes (componets) are render inside the <Outlet>, we placed in Layout.jsx. */}
+        {/* Nesting or Children Components Rendering */}
+        {/* All these children routes (componets) are render inside the <Outlet>, we placed in Layout.jsx. */}
 
-      {/* Home Page */}
-      <Route path='' element={<Home />}></Route>
+        {/* Home Page */}
+        <Route index element={<Home />}></Route>
 
-      {/* Products Checkout Page */}
-      <Route path="checkout" element={<ProductCheckout />}></Route>
-    </Route >
+        {/* Products Checkout Page */}
+        <Route path="checkout" element={<ProductCheckout />}></Route>
+      </Route >,
+
+      {/* Sign In Page */}
+      <Route path='/signin' element={<SignIn />}></Route>
+      
+      {/* Sign Up Page */}
+      <Route path='/signup' element={<SignUp />}></Route>
+    </>
   )
 )
 
