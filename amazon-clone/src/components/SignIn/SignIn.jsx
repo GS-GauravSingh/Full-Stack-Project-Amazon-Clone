@@ -25,7 +25,7 @@ function SignIn() {
                     <form className='pt-2 px-5 rounded-md' style={{ width: "min(400px, 90vw)", border: "1px solid #A6A6A6" }}>
                         <h2 className='text-3xl font-medium mb-[1.5rem]'>Sign in</h2>
 
-                        {/* User Name */}
+                        {/* Email */}
                         <div className='flex flex-col gap-1'>
                             <label htmlFor="userEmailOrNumber" className='font-medium text-sm'>Email or mobile phone number</label>
                             <input
@@ -46,6 +46,7 @@ function SignIn() {
                                 type="password"
                                 name="Password"
                                 id="userPassword"
+                                placeholder='Password'
                                 className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow'
                                 required />
                         </div>
@@ -59,7 +60,7 @@ function SignIn() {
 
                         {/* OTP */}
                         <div className='mt-[1rem] flex items-center mb-2'>
-                            <button className='w-full rounded-md text-sm py-1.5' style={{ border: "2px solid #F3F3F3", boxShadow: "0px 0px 2px gray" }}>Get an OTP on your phone</button>
+                            <button className='w-full rounded-md text-sm py-1.5 ' style={{ border: "2px solid #F3F3F3", boxShadow: "0px 0px 2px gray" }}>Get an OTP on your phone</button>
                         </div>
 
 

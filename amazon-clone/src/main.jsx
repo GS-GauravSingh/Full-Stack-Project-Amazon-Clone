@@ -7,6 +7,7 @@ import { Home, ProductCheckout } from './components'
 import ProductContextProvider from './context/ProductContext/ProductContextProvider'
 import SignUp from './components/SignUp/SignUp'
 import SignIn from './components/SignIn/SignIn'
+import Verification from './components/SignUp/Verification'
 
 // The "createBrowserRouter" function, allows you to define the paths and specify which component to render when the application is at a particular path.
 const router = createBrowserRouter(
@@ -35,6 +36,9 @@ const router = createBrowserRouter(
       
       {/* Sign Up Page */}
       <Route path='/signup' element={<SignUp />}></Route>
+      
+      {/* Sign Up - Verification Page */}
+      <Route path='/verification' element={<Verification />}></Route>
     </>
   )
 )

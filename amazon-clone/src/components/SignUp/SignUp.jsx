@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import amazonLogo from '../../assets/AmazonLogoBlack_1024x576.png'
-import '../../../public/countries.json'
+import userAuthService from '../../firebase/UserAuthentication';
+
 
 
 function SignUp() {
@@ -9,13 +10,30 @@ function SignUp() {
     // Fetching Countre Codes from Local `json` file.
     const [countryCode, setCountryCode] = useState([]);
     useEffect(() => {
-        fetch('../../../public/countries.json')
+        // Correct Path: ../../../public/CountryCodes.json
+        // This Also works: ../../../CountryCodes.json, because Files in the public directory are served at the root path.
+        fetch("../../../CountryCodes.json")
             .then(response => response.json())
             .then(response => setCountryCode(response))
             .catch(error => console.log(error))
     }, [])
+    const [selectedCode, setSelectedCode] = useState("India")
 
-    const [selectedCode, setSelectedCode] = useState("IN")
+    // User Name
+    const [userName, setUserName] = useState("");
+    // console.log(userName);
+
+    // Mobile Number
+    const [mobileNumber, setMobileNumber] = useState("");
+    // console.log(mobileNumber);
+
+    // Email
+    const [email, setEmail] = useState("")
+    // console.log(email);
+
+    // Password
+    const [password, setPassword] = useState("")
+    // console.log(password);
 
     return (
         <>
@@ -34,7 +52,16 @@ function SignUp() {
                 {/* User Details */}
                 <div className='flex justify-center' >
 
-                    <form className='pt-2 px-5 rounded-md' style={{ width: "min(400px, 90vw)", border: "1px solid #A6A6A6" }}>
+                    <form onSubmit={(event) => {
+                        event.preventDefault();
+
+                        // Create Account.
+                        userAuthService.createAccount({ email, password });
+                    }}
+                        className='pt-2 px-5 rounded-md'
+                        style={{ width: "min(400px, 90vw)", border: "1px solid #A6A6A6" }}
+                    >
+
                         <h2 className='text-3xl font-medium mb-[1.5rem]'>Create Account</h2>
 
                         {/* User Name */}
@@ -44,11 +71,15 @@ function SignUp() {
                                 type="text"
                                 name="UserName"
                                 id="userName"
+                                value={userName}
                                 className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow'
                                 style={{}}
                                 placeholder='First and last name'
                                 autoFocus
-                                required />
+                                required
+                                onChange={(event) => {
+                                    setUserName(event.target.value);
+                                }} />
                         </div>
 
                         {/* Mobile Number */}
@@ -67,10 +98,10 @@ function SignUp() {
                                 >
 
                                     {
-                                        countryCode.map((item, idx) => {
+                                        countryCode.map((obj, idx) => {
                                             return (
-                                                <option key={idx} value={item.short_name}>
-                                                    {`${item.country_name} ${item.country_code}`}
+                                                <option key={idx} value={obj.name} disabled={(email.length ? true : false)}>
+                                                    {`${obj.name} ${obj.dial_code}`}
                                                 </option>
                                             )
                                         })
@@ -83,31 +114,64 @@ function SignUp() {
                                     name="UserMobileNumber"
                                     id="userMobileNumber"
                                     className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow'
-                                    style={{}}
+                                    value={mobileNumber}
                                     placeholder='Mobile number'
-                                    required />
+                                    required
+                                    disabled={(email.length ? true : false)}
+                                    onChange={(event) => {
+                                        setMobileNumber(event.target.value);
+                                    }} />
                             </div>
+                        </div>
+
+                        {/* Separation */}
+                        <div className='mt-[1rem] flex items-center'>
+                            <span className='flex-grow' style={{ height: "2px", backgroundColor: "#F3F3F3", width: "10px" }}></span>
+                            <span className='px-2 text-xs' style={{ color: "#767676" }}>or</span>
+                            <span className='flex-grow' style={{ height: "2px", backgroundColor: "#F3F3F3", width: "10px" }}></span>
+                        </div>
+
+                        {/* Email */}
+                        <div className='flex flex-col gap-1 mt-[1rem]'>
+                            <label htmlFor="userEmailOrNumber" className='font-medium text-sm'>Email</label>
+                            <input
+                                type="text"
+                                name="UserEmailOrNumber"
+                                id="userEmailOrNumber"
+                                className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow'
+                                value={email}
+                                placeholder='Email'
+                                required
+                                disabled={(mobileNumber.length ? true : false)}
+                                onChange={(event) => {
+                                    setEmail(event.target.value)
+
+                                }} />
                         </div>
 
                         {/* Password */}
                         <div className='flex flex-col gap-1 mt-[1rem]'>
-                            <label htmlFor="userPassword" className='font-medium text-sm'>Password</label>
-                            <input 
-                            type="password" 
-                            name="Password" 
-                            id="userPassword" 
-                            className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow'
-                            required />
+                            <label htmlFor="userPassword" className='font-medium text-sm'>Create a new password</label>
+                            <input
+                                type="password"
+                                name="Password"
+                                id="userPassword"
+                                value={password}
+                                className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow'
+                                required
+                                onChange={(event) => {
+                                    setPassword(event.target.value);
+                                }} />
                         </div>
 
                         {/* Text */}
                         <div className='mt-[1rem]'>
-                            <p className='text-sm'>To verify your number, we will send you a text message with a temporary code. Message and data rates may apply.</p>
+                            <p className='text-sm'>To verify your number, we will send you a text message with a temporary code. Message and data rates may apply. You can directly create your Amazon Account using your email address, no verification in case of email address.</p>
                         </div>
 
                         {/* Button */}
                         <div className='flex justify-center mt-[1rem] pb-[1.5rem]' style={{ borderBottom: "1px solid #E7E7E7" }}>
-                            <button type='submit' className='bg-yellow-400 hover:bg-yellow-500 text-black py-1.5 w-full text-sm rounded-md font-medium'>Verify mobile number</button>
+                            <button type='submit' className='bg-yellow-400 hover:bg-yellow-500 text-black py-1.5 w-full text-sm rounded-md font-medium'> {(mobileNumber.length ? "Verify mobile number" : "Create your Amazon Account")} </button>
                         </div>
 
                         {/* Text */}
@@ -131,8 +195,8 @@ function SignUp() {
                     </form>
                 </div >
 
-                {/* Footer */}
 
+                {/* Footer */}
                 <div className='bg-white pt-[2rem] text-sm' >
                     <div className='py-[2rem]' style={{ backgroundImage: "radial-gradient(circle, #F6F6F6, white)" }}>
 
