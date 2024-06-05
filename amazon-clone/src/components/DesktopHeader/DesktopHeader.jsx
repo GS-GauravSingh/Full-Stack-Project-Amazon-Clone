@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react'
 import amazonlogo from "../../assets/AmazonLogo_2000x604.png"
 import indiaFlag from "../../assets/india-flag-icon.svg"
 import { Link } from 'react-router-dom'
-import useProductContext from '../../context/ProductContext/useProductContext'
+import { useSelector } from 'react-redux'
 
 function DesktopHeader() {
 
-    // Accessing the Product Context. Used to access the total number of items present in the cart. So, that we can display the product count (total items in the cart) in the header.
-    const { cartLength } = useProductContext();
+    // `useSelector()` is a hook provided by the React-Redux library that allows functional components to extract data from the Redux store. `useSelector()` has access to the state - the current state of redux store. 
+    const cart = useSelector((state) => state.cart);
 
     return (
         <header className='hidden customBreakpointForMobileHeader:block cursor-pointer'>
@@ -78,7 +78,7 @@ function DesktopHeader() {
                             <span>
                                 <i className="fa-solid fa-cart-shopping text-2xl"></i>
                             </span>
-                            <span className='font-bold ml-2 text-xl text-orange-400'> {cartLength()} </span>
+                            <span className='font-bold ml-2 text-xl text-orange-400'> {cart?.length} </span>
                             {/* 
                                 The question mark (?) in cart?.length is the `optional chaining` operator in JavaScript. Basically, it is used to handle errors.
 

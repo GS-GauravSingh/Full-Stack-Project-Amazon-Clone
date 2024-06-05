@@ -1,13 +1,12 @@
 import React from 'react'
 import amazonlogo from "../../assets/AmazonLogo_2000x604.png"
 import { Link } from 'react-router-dom';
-import useProductContext from '../../context/ProductContext/useProductContext'
+import { useSelector } from 'react-redux'
 
 function MobileHeader() {
 
-    // Accessing the Product Context. Used to access the total number of items present in the cart. So, that we can display the product count (total items in the cart) in the header.
-    const { cartLength } = useProductContext();
-
+    // `useSelector()` is a hook provided by the React-Redux library that allows functional components to extract data from the Redux store. `useSelector()` has access to the state - the current state of redux store. 
+    const cart = useSelector((state) => state.cart);
 
     return (
         <header className='customBreakpointForMobileHeader:hidden'>
@@ -56,7 +55,7 @@ function MobileHeader() {
                                 <span>
                                     <i className="fa-solid fa-cart-shopping text-xl"></i>
                                 </span>
-                                <span className='font-bold ml-2 text-xl text-orange-400 cursor-default'> {cartLength()} </span>
+                                <span className='font-bold ml-2 text-xl text-orange-400 cursor-default'> {cart?.length} </span>
                             </Link>
                         </div>
                     </div>

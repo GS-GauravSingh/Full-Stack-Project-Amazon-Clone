@@ -1,7 +1,6 @@
 import React from 'react'
 import { DesktopHeader, MobileHeader, Footer, FooterSignIn } from './components'
 import { Outlet } from "react-router-dom"
-import ProductContextProvider from './context/ProductContext/ProductContextProvider'
 
 function Layout() {
     return (

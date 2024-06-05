@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import useProductContext from '../../context/ProductContext/useProductContext'
+import { useSelector } from 'react-redux';
 
 
 function SubTotal() {
 
-  // Accessing Product Context to calculate to total price of all products added to cart.
-  const { cart } = useProductContext();
+  // `useSelector()` is a hook provided by the React-Redux library that allows functional components to extract data from the Redux store. `useSelector()` has access to the state - the current state of redux store. 
+  const cart = useSelector((state) => state.cart);
+
 
   // State variable to calculate and store total price of all products added to cart.
   const [totalCost, setTotalCost] = useState(0);
@@ -51,7 +52,7 @@ function SubTotal() {
           <label htmlFor="checkboxLabel" className=''>Send as a gift. Include custom message</label>
         </p>
       </div>
-      
+
     </>
   )
 }

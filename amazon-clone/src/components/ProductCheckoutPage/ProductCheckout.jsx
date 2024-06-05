@@ -2,12 +2,13 @@ import React from 'react'
 import SubTotal from '../SubTotal/SubTotal'
 import { Link } from 'react-router-dom'
 import ProductCart from '../Product/ProductCart'
-import useProductContext from '../../context/ProductContext/useProductContext'
+import { useSelector } from 'react-redux'
 
 function ProductCheckout() {
 
-    // Acessing or Consuming the context to render products added to cart.
-    const { cart } = useProductContext();
+    // `useSelector()` is a hook provided by the React-Redux library that allows functional components to extract data from the Redux store. `useSelector()` has access to the state - the current state of redux store. 
+    const cart = useSelector((state) => state.cart);
+    console.log(cart);
 
     return (
         <>
@@ -47,6 +48,7 @@ function ProductCheckout() {
                         {/* Rendering Products added to cart. */}
                         {
                             cart.map(function (cartItem) {
+                                
                                 // 'cartItem' is a Object.
                                 return (
                                     <div key={cartItem.productID}>

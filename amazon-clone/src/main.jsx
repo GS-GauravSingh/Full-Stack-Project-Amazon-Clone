@@ -4,10 +4,11 @@ import Layout from './Layout'
 import './index.css'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { Home, ProductCheckout } from './components'
-import ProductContextProvider from './context/ProductContext/ProductContextProvider'
 import SignUp from './components/SignUp/SignUp'
 import SignIn from './components/SignIn/SignIn'
 import Verification from './components/SignUp/Verification'
+import { Provider } from 'react-redux'
+import { store } from './redux/store/store'
 
 // The "createBrowserRouter" function, allows you to define the paths and specify which component to render when the application is at a particular path.
 const router = createBrowserRouter(
@@ -15,10 +16,11 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path="/" element={
-        <ProductContextProvider>
-          {/* Wrapping the Layout component inside context provider allow the Layout components and all the components that are rendering inside Layout can access the context data. */}
+        <Provider store={store}>
+          {/* You need to wrap the components inside react-redux "Provider" who wants access to the store data. */}
+          {/* The store object (exported from a file named store.js) is passed to the store prop of the Provider. This connects the Redux store to your React application. */}
           <Layout />
-        </ProductContextProvider>
+        </Provider>
       }>
 
         {/* Nesting or Children Components Rendering */}
@@ -33,10 +35,10 @@ const router = createBrowserRouter(
 
       {/* Sign In Page */}
       <Route path='/signin' element={<SignIn />}></Route>
-      
+
       {/* Sign Up Page */}
       <Route path='/signup' element={<SignUp />}></Route>
-      
+
       {/* Sign Up - Verification Page */}
       <Route path='/verification' element={<Verification />}></Route>
     </>

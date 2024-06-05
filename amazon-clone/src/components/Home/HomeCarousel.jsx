@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 
-
 import bannerImage1 from '../../assets/Clothing_3000x1200.jpg'
 import bannerImage2 from '../../assets/GroceryItems_3000x1200.jpg'
 import bannerImage3 from '../../assets/HomeShoppingItems_3000x1200.jpg'

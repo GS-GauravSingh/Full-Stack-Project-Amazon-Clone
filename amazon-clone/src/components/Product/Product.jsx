@@ -1,14 +1,40 @@
-import React, { useId } from 'react'
+import React from 'react'
 import DisplayStarRating from '../StarRating/DisplayStarRating';
-import useProductContext from '../../context/ProductContext/useProductContext'
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../../redux/productSlice';
 
-function Product({ title, price, image, rating }) {
 
-    // Each product has its own unique ID.
-    const id = useId();
+function Product({id, title, price, image, rating }) {
 
-    // Using ProductContext to store data when user click on `add to cart` button.
-    const { addToCart } = useProductContext();
+    // 'useDispatch()' is a hook provided by Redux. This hook gives you access to the `dispatch` function from the Redux store, which you can use to dispatch actions that update the Redux store's state.
+    const dispatch = useDispatch();
+
+    // This function takes care of, what to do when the user clicks on the 'Add to Cart' button.
+    function handleSubmit() {
+
+        const newProductDetails = {
+            productID: id,
+            productTitle: title,
+            productPrice: price,
+            productImage: image,
+            productRating: rating
+        };
+
+        // `dispatch` is function that uses a reducer function (in this case `addToCart`) to make changes to the data stored in a redux store. The reducer function can take a payload as part of the action object as input. The payload typically contains the data necessary to perform the state update.
+        dispatch(addToCart(newProductDetails));
+
+        /*
+        When you call "dispatch(addToCart(newProductDetails));", the 'addToCart' action creator generates an action object that looks like this:
+        {
+            type: 'products/addToCart',
+            payload: newProductDetails
+        }
+
+        Here's the breakdown of above code:
+        1. type: `products` indicates the slice name, `addToCart` indicate the reducer functions used to makes changes to the data.
+        2. payload: Contains the additional data necessary to perform the action. In this case, it holds the value of `todoMsg`.
+        */
+    }
 
     return (
         <div className='flex-grow flex-shrink basis-72' >
@@ -36,17 +62,7 @@ function Product({ title, price, image, rating }) {
 
                 {/* Add to Cart Button */}
                 <div className='bg-yellow-400 hover:bg-amber-400 text-center text-black font-semibold rounded-md mt-2'>
-                    <button className='w-full p-2 border-none outline-none' onClick={() => {
-                        const newProductDetails = {
-                            productID: id,
-                            productTitle: title,
-                            productPrice: price,
-                            productImage: image,
-                            productRating: rating
-
-                        };
-                        addToCart(newProductDetails);
-                    }}> Add to Cart </button>
+                    <button className='w-full p-2 border-none outline-none' onClick={() => { handleSubmit(); }}> Add to Cart </button>
                 </div>
 
 
