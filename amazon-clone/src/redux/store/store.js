@@ -10,5 +10,9 @@ import productReducers from '../productSlice';
 export const store = configureStore({
 
     // The `reducer` property is set to `productReducers`, which tells the store to use this reducer function is used update the store data.
-    reducer: productReducers
+    reducer: {
+
+        // This is how you can list reducers for individual slices in the reducer object.
+        products: productReducers
+    }
 });

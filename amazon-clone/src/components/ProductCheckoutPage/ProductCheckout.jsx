@@ -7,8 +7,7 @@ import { useSelector } from 'react-redux'
 function ProductCheckout() {
 
     // `useSelector()` is a hook provided by the React-Redux library that allows functional components to extract data from the Redux store. `useSelector()` has access to the state - the current state of redux store. 
-    const cart = useSelector((state) => state.cart);
-    console.log(cart);
+    const cart = useSelector((state) => state.products.cart);
 
     return (
         <>

@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 function SubTotal() {
 
   // `useSelector()` is a hook provided by the React-Redux library that allows functional components to extract data from the Redux store. `useSelector()` has access to the state - the current state of redux store. 
-  const cart = useSelector((state) => state.cart);
+  const cart = useSelector((state) => state.products.cart);
 
 
   // State variable to calculate and store total price of all products added to cart.
