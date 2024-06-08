@@ -2,6 +2,7 @@
 // `configureStore()` function is used to create a global store. So, we need to import it from redux toolkit.
 import { configureStore } from '@reduxjs/toolkit'
 import productReducers from '../productSlice';
+import userAuthReducers from '../userAuthSlice'
 
 // Global Store - Where we store all the data.
 // Create a global store using `configureStore()` function and also export it so that we can use this store in other part of application.
@@ -13,6 +14,7 @@ export const store = configureStore({
     reducer: {
 
         // This is how you can list reducers for individual slices in the reducer object.
-        products: productReducers
+        products: productReducers,
+        userAuth: userAuthReducers,
     }
 });
