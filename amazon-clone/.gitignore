@@ -25,3 +25,8 @@ dist-ssr
 
 # Firebase Credentials
 .env
+
+# Firebase Hosting
+.firebase
+.firebaserc
+firebase.json
