@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth'
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from 'firebase/auth'
 import firebaseConfigurations from '../firebaseConfigurations/firebaseConfigurations'
 
 // Quality Code - Wrap functionalities inside a class.
@@ -20,17 +20,20 @@ class UserAuthenticationService {
     }
 
     // Sign up new users
-    async createAccount({ email, password }) {
+    async createAccount({ userName, email, password }) {
 
         try {
             // 'createUserWithEmailAndPassword()' will return a promise.
             const newUser = await createUserWithEmailAndPassword(this.auth, email, password);
 
+            // Set the name of the user when account is created successfully.
+            await this.updateUserProfile(userName);
+
             // If account created successfully, we simply call the 'login' method, so that user directly logged in to our application.
             if (newUser) {
                 // If newUser is not null, it means account created successfully.
                 // Login
-                return this.logIn();
+                return await this.signIn({ email, password });
             }
             else {
                 return newUser;
@@ -41,7 +44,7 @@ class UserAuthenticationService {
     }
 
     // Sign in existing users
-    async logIn({ email, password }) {
+    async signIn({ email, password }) {
         try {
             const existingUser = await signInWithEmailAndPassword(this.auth, email, password);
             return existingUser;
@@ -51,26 +54,39 @@ class UserAuthenticationService {
     }
 
     // Is user already logged in or not.
-    getCurrentUser() {
+    async getCurrentUser() {
         try {
-            onAuthStateChanged(this.auth, (user) => {
-
-                if (user) {
-                    // User is signed in.
-                    return user;
-                }
-                else {
-                    // User is signed out.
-                    return null;
-                }
+            return await new Promise((resolve, reject) => {
+                onAuthStateChanged(this.auth, (user) => {
+                    if (user) {
+                        // User is signed in
+                        resolve(user)
+                    }
+                    else {
+                        // User is signed out
+                        reject("User is Signed Out")
+                    }
+                })
             })
+        } catch (error) {
+            throw error
+        }
+    }
+
+    // Update User Profile
+    async updateUserProfile(userName) {
+        try {
+            await updateProfile(this.auth.currentUser, {
+                displayName: userName
+            })
+
         } catch (error) {
             throw error;
         }
     }
 
     // Sign Out or Log Out a user.
-    async logOut(){
+    async signOut() {
         try {
             // Sign-out successful.
             await signOut(this.auth);

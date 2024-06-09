@@ -1,12 +1,44 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import amazonlogo from "../../assets/AmazonLogo_2000x604.png"
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import userAuthService from '../../firebase/UserAuthentication'
+import { logOut } from '../../redux/userAuthSlice'
 
 function MobileHeader() {
 
     // `useSelector()` is a hook provided by the React-Redux library that allows functional components to extract data from the Redux store. `useSelector()` has access to the state - the current state of redux store. 
     const cart = useSelector((state) => state.products.cart);
+
+    // User Authentication Status
+    const authStatus = useSelector((state) => state.userAuth.status);
+    const userName = useSelector((state) => state.userAuth.userData?.name);
+
+    const [localUserName, setLocalUserName] = useState("");
+
+    // For Updating state when user logged out.
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (authStatus) {
+            // User is Logged In.
+            setLocalUserName(userName.split(" ")[0]);
+        }
+        else {
+            setLocalUserName("");
+        }
+    }, [authStatus])
+
+    // Function to handle when user click on signout button.
+    async function handleSignOut() {
+        try {
+            await userAuthService.signOut();
+            dispatch(logOut());
+
+        } catch (error) {
+            throw error;
+        }
+    }
 
     return (
         <header className='customBreakpointForMobileHeader:hidden'>
@@ -36,11 +68,30 @@ function MobileHeader() {
                         {/* Sign In */}
                         <div className='flex items-center gap-1 cursor-pointer'>
 
-                            <div className='flex text-xs'>
-                                <Link to="/signin">
-                                    <span className='text-blue-500'>Sign in</span>
-                                </Link>
-                                <span style={{ marginLeft: "4px", marginBottom: "0.1rem", fontSize: "10px" }} className=''> <i class="fa-solid fa-angle-right"></i> </span>
+                            <div className='flex items-center text-xs'>
+
+                                {/* JavaScript */}
+                                {
+                                    authStatus ?
+                                        (
+                                            <div className='flex flex-col' >
+                                                <span className='font-medium'> {localUserName} </span>
+                                                <button 
+                                                className='text-blue-500 hover:opacity-80'
+                                                onClick={handleSignOut}
+                                                > Sign out </button>
+                                            </div>
+                                        )
+                                        :
+                                        (
+                                            <Link to="/signin">
+                                                <span className='text-blue-500'>Sign in</span>
+                                            </Link>
+                                        )
+                                }
+
+
+                                <span style={{ marginLeft: "4px", fontSize: "10px" }} className=''> <i class="fa-solid fa-angle-right"></i> </span>
                             </div>
 
                             {/* User Icon */}

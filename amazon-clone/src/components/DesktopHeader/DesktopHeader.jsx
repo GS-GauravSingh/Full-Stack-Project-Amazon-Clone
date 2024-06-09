@@ -2,12 +2,44 @@ import React, { useEffect, useState } from 'react'
 import amazonlogo from "../../assets/AmazonLogo_2000x604.png"
 import indiaFlag from "../../assets/india-flag-icon.svg"
 import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { logOut } from '../../redux/userAuthSlice'
+import userAuthService from '../../firebase/UserAuthentication'
 
 function DesktopHeader() {
 
     // `useSelector()` is a hook provided by the React-Redux library that allows functional components to extract data from the Redux store. `useSelector()` has access to the state - the current state of redux store. 
     const cart = useSelector((state) => state.products.cart);
+
+    // User Authentication Status
+    const authStatus = useSelector((state) => state.userAuth.status);
+    const userName = useSelector((state) => state.userAuth.userData?.name);
+
+    const [localUserName, setLocalUserName] = useState("");
+
+    // For Updating state when user logged out.
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (authStatus) {
+            // User is Logged In.
+            setLocalUserName(userName.split(" ")[0]);
+        }
+        else {
+            setLocalUserName("");
+        }
+    }, [authStatus])
+
+    // Function to handle when user click on signout button.
+    async function handleSignOut(){
+        try {
+            await userAuthService.signOut();
+            dispatch(logOut());
+            
+        } catch (error) {
+            throw error;
+        }
+    }
 
     return (
         <header className='hidden customBreakpointForMobileHeader:block cursor-pointer'>
@@ -58,12 +90,34 @@ function DesktopHeader() {
 
                     {/* Sign In Option */}
                     <div className='flex flex-col border border-transparent hover:border-slate-300 rounded-sm py-1 px-2'>
-                        <Link to='/signin'>
-                            <span className='text-sm ml-1 whitespace-nowrap'>Hello, <span className='p-0 text-blue-400 cursor-pointer'>sign in</span></span>
-                        </Link>
-                        <select className='bg-transparent border-none outline-none font-bold'>
-                            <option>Account & Lists</option>
-                        </select>
+
+
+                        {/* JavaScript */}
+                        {
+                            authStatus ?
+                                (
+                                    <>
+                                        <span className='text-sm whitespace-nowrap'>Hello, <span className='p-0 cursor-pointer text-sm font-medium'>{localUserName}</span></span>
+
+                                        <button 
+                                        className=' text-blue-400 cursor-pointer text-sm text-left hover:opacity-80'
+                                        onClick={handleSignOut}
+                                        >Sign Out</button>
+
+                                    </>
+                                )
+                                :
+                                (
+                                    <>
+                                        <span className='text-sm whitespace-nowrap'>Hello, <span className='p-0 cursor-pointer text-sm'>Guest</span></span>
+                                        <Link to='/signin'>
+                                            <span className=' text-blue-400 cursor-pointer text-sm hover:opacity-80'>Sign In</span>
+                                        </Link>
+                                    </>
+                                )
+                        }
+
+
                     </div>
 
                     {/* Returns and Orders Option */}

@@ -1,10 +1,41 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import amazonLogo from '../../assets/AmazonLogoBlack_1024x576.png'
-
+import userAuthService from '../../firebase/UserAuthentication'
+import { useDispatch } from 'react-redux'
+import { logIn, logOut } from '../../redux/userAuthSlice'
 
 
 function SignIn() {
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    // Funciton to handle when user submit the sign in form.
+    async function handleSubmit(event) {
+        event.preventDefault();
+
+        try {
+            const userCredentials = await userAuthService.signIn({ email, password });
+            if (userCredentials) {
+
+                const userData = {
+                    name: userCredentials.user.displayName,
+                };
+
+                dispatch(logIn(userData));
+                navigate("/");
+            }
+            else{
+                dispatch(logOut());
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
+
     return (
         <>
             <div className='bg-white flex flex-col justify-between' style={{ minHeight: "100vh" }}>
@@ -22,7 +53,11 @@ function SignIn() {
                 {/* User Details */}
                 <div className='flex flex-col items-center' >
 
-                    <form className='pt-2 px-5 rounded-md' style={{ width: "min(400px, 90vw)", border: "1px solid #A6A6A6" }}>
+                    <form
+                        className='pt-2 px-5 rounded-md'
+                        style={{ width: "min(400px, 90vw)", border: "1px solid #A6A6A6" }}
+                        onSubmit={handleSubmit}
+                    >
                         <h2 className='text-3xl font-medium mb-[1.5rem]'>Sign in</h2>
 
                         {/* Email */}
@@ -36,7 +71,9 @@ function SignIn() {
                                 style={{}}
                                 placeholder='Email or mobile phone number'
                                 autoFocus
-                                required />
+                                required
+                                onChange={(event) => { setEmail(event.target.value) }}
+                            />
                         </div>
 
                         {/* Password */}
@@ -48,7 +85,9 @@ function SignIn() {
                                 id="userPassword"
                                 placeholder='Password'
                                 className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow'
-                                required />
+                                required
+                                onChange={(event) => { setPassword(event.target.value) }}
+                            />
                         </div>
 
                         {/* Separation */}

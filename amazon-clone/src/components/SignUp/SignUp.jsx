@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import amazonLogo from '../../assets/AmazonLogoBlack_1024x576.png'
 import userAuthService from '../../firebase/UserAuthentication';
-
+import { useDispatch } from 'react-redux'
+import { logIn, logOut } from '../../redux/userAuthSlice';
 
 
 function SignUp() {
@@ -19,21 +20,43 @@ function SignUp() {
     }, [])
     const [selectedCode, setSelectedCode] = useState("India")
 
-    // User Name
     const [userName, setUserName] = useState("");
-    // console.log(userName);
-
-    // Mobile Number
     const [mobileNumber, setMobileNumber] = useState("");
-    // console.log(mobileNumber);
-
-    // Email
     const [email, setEmail] = useState("")
-    // console.log(email);
-
-    // Password
     const [password, setPassword] = useState("")
-    // console.log(password);
+
+    // `useNavigate()` is a hook provided by React-Router-Dom and it is used to programatically redirect the user.
+    const navigate = useNavigate();
+
+    // Storing user information and status in Redux Store.
+    const dispatch = useDispatch();
+
+
+    // Function to handle form submition.
+    async function handleSubmit(event) {
+
+        event.preventDefault();
+
+        try {
+            const userCredentials = await userAuthService.createAccount({ userName, email, password });
+
+            if (userCredentials) {
+
+                const userData = {
+                    name: userCredentials.user.displayName,
+                };
+
+                dispatch(logIn(userData));
+                navigate("/");
+            }
+            else {
+                dispatch(logOut());
+            }
+
+        } catch (error) {
+            throw error
+        }
+    }
 
     return (
         <>
@@ -52,12 +75,7 @@ function SignUp() {
                 {/* User Details */}
                 <div className='flex justify-center' >
 
-                    <form onSubmit={(event) => {
-                        event.preventDefault();
-
-                        // Create Account.
-                        userAuthService.createAccount({ email, password });
-                    }}
+                    <form onSubmit={handleSubmit}
                         className='pt-2 px-5 rounded-md'
                         style={{ width: "min(400px, 90vw)", border: "1px solid #A6A6A6" }}
                     >

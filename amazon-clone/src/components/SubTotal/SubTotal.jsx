@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+
+
 
 
 function SubTotal() {
+
+  // User Authentication Status
+  const authStatus = useSelector((state) => state.userAuth.status);
 
   // `useSelector()` is a hook provided by the React-Redux library that allows functional components to extract data from the Redux store. `useSelector()` has access to the state - the current state of redux store. 
   const cart = useSelector((state) => state.products.cart);
@@ -46,7 +52,21 @@ function SubTotal() {
           <span className='font-medium text-gray-500'>EMI Available </span>
           <span className='font-semibold' style={{ color: "#007185" }}>Details</span>
         </p>
-        <button className='w-full mt-4 text-black py-1.5 bg-yellow-400 hover:bg-amber-400 rounded-2xl font-medium'>Proceed to Buy ({cart.length} Items)</button>
+
+        {/* JavaScript */}
+        {
+          authStatus ?
+            (
+              <button className='w-full mt-4 text-black py-1.5 bg-yellow-400 hover:bg-amber-400 rounded-2xl font-medium'>Proceed to Buy ({cart.length} Items)</button>
+            )
+            :
+            (
+              <Link to="/signin">
+                <button className='w-full mt-4 text-black py-1.5 bg-yellow-400 hover:bg-amber-400 rounded-2xl font-medium'>Proceed to Buy ({cart.length} Items)</button>
+              </Link>
+            )
+        }
+
         <p className='flex items-center gap-2 mt-4'>
           <input type="checkbox" id='checkboxLabel' className='p-2 w-6 h-6' />
           <label htmlFor="checkboxLabel" className=''>Send as a gift. Include custom message</label>
