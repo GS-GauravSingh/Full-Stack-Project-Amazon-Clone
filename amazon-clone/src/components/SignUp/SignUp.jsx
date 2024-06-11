@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import amazonLogo from '../../assets/AmazonLogoBlack_1024x576.png'
 import userAuthService from '../../firebase/UserAuthentication';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { logIn, logOut } from '../../redux/userAuthSlice';
 
 
@@ -37,25 +37,43 @@ function SignUp() {
 
         event.preventDefault();
 
-        try {
-            const userCredentials = await userAuthService.createAccount({ userName, email, password });
-
-            if (userCredentials) {
-
-                const userData = {
-                    name: userCredentials.user.displayName,
-                };
-
-                dispatch(logIn(userData));
-                navigate("/");
-            }
-            else {
-                dispatch(logOut());
-            }
-
-        } catch (error) {
-            throw error
+        // If user wants to create an account using phone number - then we simply redirect the user to the verification components, where we handle the account creation. But, before navigation, don't forget to store the user's mobile number in the redux store.
+        if (mobileNumber.length) {
+            const userData = {
+                name: userName,
+                email: email,
+                phoneNumber: mobileNumber,
+            };
+            dispatch(logIn(userData));
+            navigate("/verification")
         }
+
+        else if(email.length) {
+            // Creating account using email and password.
+            try {
+                const userCredentials = await userAuthService.createAccount({ userName, email, password });
+
+                if (userCredentials) {
+
+                    const userData = {
+                        name: userCredentials.user.displayName,
+                        email: userCredentials.user.email,
+                        phoneNumber: userCredentials.user.phoneNumber,
+                    };
+
+                    dispatch(logIn(userData));
+                    navigate("/");
+                }
+                else {
+                    dispatch(logOut());
+                }
+
+            } catch (error) {
+                throw error
+            }
+        }
+
+
     }
 
     return (

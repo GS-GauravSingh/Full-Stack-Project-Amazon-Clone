@@ -23,6 +23,8 @@ function SignIn() {
 
                 const userData = {
                     name: userCredentials.user.displayName,
+                    email: userCredentials.user.email,
+                    phoneNumber: userCredentials.user.phoneNumber,
                 };
 
                 dispatch(logIn(userData));

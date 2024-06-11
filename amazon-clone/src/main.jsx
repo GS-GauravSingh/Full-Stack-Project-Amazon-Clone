@@ -48,7 +48,11 @@ const router = createBrowserRouter(
       }></Route>
 
       {/* Sign Up - Verification Page */}
-      <Route path='/verification' element={<Verification />}></Route>
+      <Route path='/verification' element={
+        <Provider store={store}>
+          <Verification />
+        </Provider>
+      }></Route>
     </>
   )
 )

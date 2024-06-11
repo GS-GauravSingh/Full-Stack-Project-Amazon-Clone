@@ -1,8 +1,61 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import amazonLogo from '../../assets/AmazonLogoBlack_1024x576.png'
+import userAuthService from '../../firebase/UserAuthentication';
+import { useDispatch, useSelector } from 'react-redux'
+import { logIn, logOut } from '../../redux/userAuthSlice';
 
 function Verification() {
+
+    // `useNavigate()` is a hook provided by React-Router-Dom and it is used to programatically redirect the user.
+    const navigate = useNavigate();
+
+    // Storing user information and status in Redux Store.
+    const dispatch = useDispatch();
+
+    const [OTP, setOTP] = useState();
+
+    const userData = useSelector(state => state.userAuth.userData);
+    const mobileNumber = userData?.phoneNumber;
+    const userName = userData?.name;
+
+    // Create user account - when user click on 'create your amazon account' button.
+    async function handleSubmit(event) {
+
+        event.preventDefault();
+
+        try {
+            // Step 1: Verify reCaptch.
+            userAuthService.reCaptchaVerifier("createAmazonAccountBtnId");
+
+            // Step 2: send the verification code to the user's mobile number.
+            await userAuthService.createAccountWithPhoneNumber(mobileNumber);
+
+            // Step 3: Verify the One-Time-Password sent to the user's mobile number.
+            const userCredentials = await userAuthService.verifyOTP(OTP);
+
+            if (userCredentials) {
+                // Account created successfully.
+                await userAuthService.updateUserProfile(userName);
+
+                const userData = {
+                    name: userCredentials.user.displayName,
+                    email: userCredentials.user.email,
+                    phoneNumber: userCredentials.user.phoneNumber,
+                };
+
+                dispatch(logIn(userData));
+                navigate("/");
+            }
+            else {
+                dispatch(logOut());
+                console.log("Error :: handleSubmit() ::  Verification.jsx");
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
+
     return (
         <>
             <div className='bg-white flex flex-col justify-between' style={{ minHeight: "100vh" }}>
@@ -20,11 +73,14 @@ function Verification() {
                 {/* User Details */}
                 <div className='flex justify-center' >
 
-                    <form className='pt-2 px-5 rounded-md' style={{ width: "min(400px, 90vw)", border: "1px solid #A6A6A6" }}>
-                        <h2 className='text-3xl font-medium mb-[1.5rem]'>Verify email address</h2>
+                    <form
+                        onSubmit={handleSubmit}
+                        className='pt-2 px-5 rounded-md'
+                        style={{ width: "min(400px, 90vw)", border: "1px solid #A6A6A6" }}>
+                        <h2 className='text-3xl font-medium mb-[1.5rem]'>Verify phone number</h2>
 
                         <div className='text-sm'>
-                            <p>To verify your email, we've sent a One TIme Password (OTP) to example@gmail.com.</p>
+                            <p>To verify your phone number, we've sent a One TIme Password (OTP) to your number.</p>
                         </div>
 
 
@@ -39,13 +95,15 @@ function Verification() {
                                 style={{}}
                                 placeholder='OTP'
                                 autoFocus
-                                required />
+                                required
+                                onChange={(event) => setOTP(event.target.value)}
+                            />
                         </div>
 
 
                         {/* Button */}
                         <div className='flex justify-center mt-[1rem] pb-[1.5rem]' style={{ borderBottom: "1px solid #E7E7E7" }}>
-                            <button type='submit' className='bg-yellow-400 hover:bg-yellow-500 text-black py-1.5 w-full text-sm rounded-md font-medium'>Create your Amazon Account</button>
+                            <button id='createAmazonAccountBtnId' type='submit' className='bg-yellow-400 hover:bg-yellow-500 text-black py-1.5 w-full text-sm rounded-md font-medium'>Create your Amazon Account</button>
                         </div>
 
                         {/* Text */}
@@ -74,8 +132,8 @@ function Verification() {
 
                                 </p>
                                 <ul className='list-disc list-inside'>
-                                    <li>Confirm that your email address was entered correctly.</li>
-                                    <li>Check your spam or junk email folder.</li>
+                                    <li>Confirm that your phone number was entered correctly.</li>
+                                    <li>Check your spam or junk folder.</li>
                                 </ul>
                             </div>
                         </div>

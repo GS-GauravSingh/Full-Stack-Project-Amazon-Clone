@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from 'firebase/auth'
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth'
 import firebaseConfigurations from '../firebaseConfigurations/firebaseConfigurations'
 
 // Quality Code - Wrap functionalities inside a class.
@@ -93,6 +93,48 @@ class UserAuthenticationService {
         } catch (error) {
             // An error happened.
             throw error;
+        }
+    }
+
+    // User Authentication with Mobile Number.
+    async reCaptchaVerifier(submitBtnId) {
+        // 'window' is a global object and here we are creating out own property in window object named 'recaptchaVerifier'. Storing the response of the 'RecaptchaVerifier()' function.
+        window.recaptchaVerifier = new RecaptchaVerifier(this.auth, String(submitBtnId), {
+            'size': 'invisible',
+            'callback': async (response) => {
+                // reCAPTCHA solved, allow signInWithPhoneNumber.
+                // console.log("Inside reCaptchVerifier");
+                // console.log(response);
+            }
+        })
+    }
+
+    async createAccountWithPhoneNumber(phoneNumber) {
+        try {
+            const appVerifier = window.recaptchaVerifier;
+
+            // 'window' is a global object and here we are creating out own property in window object named 'confirmationResult'.
+            window.confirmationResult = await signInWithPhoneNumber(this.auth, phoneNumber, appVerifier);
+
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Sign in the user with the verification code.
+    async verifyOTP(OTP) {
+        try {
+            const user = await window.confirmationResult.confirm(OTP);
+            if (user) {
+                // User signed in successfully.
+                return user;
+            }
+            else {
+                console.log("Error :: createAccountWithPhoneNumber() :: Account not created.");
+            }
+        } catch (error) {
+            throw error;
+
         }
     }
 
