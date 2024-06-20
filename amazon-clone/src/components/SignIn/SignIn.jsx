@@ -4,36 +4,100 @@ import amazonLogo from '../../assets/AmazonLogoBlack_1024x576.png'
 import userAuthService from '../../firebase/UserAuthentication'
 import { useDispatch } from 'react-redux'
 import { logIn, logOut } from '../../redux/userAuthSlice'
+import bcrypt from 'bcryptjs'
+
+
 
 
 function SignIn() {
 
     const [email, setEmail] = useState("");
+    const [mobileNumber, setMobileNumber] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    // Function to verify password hashedPassword with password entered by user.
+    async function verifyPassword(hashedPassword, userEnteredPassword){
+        try {
+            const match = await bcrypt.compare(userEnteredPassword, hashedPassword);
+            return match;
+        } catch (error) {
+            throw error;
+        }
+    }
 
     // Funciton to handle when user submit the sign in form.
     async function handleSubmit(event) {
         event.preventDefault();
 
-        try {
-            const userCredentials = await userAuthService.signIn({ email, password });
-            if (userCredentials) {
+        // If user wants to log in using email.
+        if (email.length) {
+            try {
+                const userCredentials = await userAuthService.signIn({ email, password });
+                if (userCredentials) {
+
+                    const userData = {
+                        name: userCredentials.user.displayName,
+                        email: userCredentials.user.email,
+                        phoneNumber: ""
+                    };
+
+                    dispatch(logIn(userData));
+                    navigate("/");
+                }
+                else {
+                    dispatch(logOut());
+                }
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        // If user wants to log in using phone number.
+        else if (mobileNumber.length) {
+            // Remove all spaces from the phone number
+            const cleanedPhoneNumber = mobileNumber.replace(/\s+/g, '');
+            const document = await userAuthService.getDataFromFirestore(cleanedPhoneNumber);
+            if (document) {
 
                 const userData = {
-                    name: userCredentials.user.displayName,
+                    name: document.userName,
+                    email: email,
+                    phoneNumber: mobileNumber
                 };
 
-                dispatch(logIn(userData));
-                navigate("/");
+                // If user entered the password.
+                if (password.length) {
+                    const storedHashedPassword = document.password;
+                    const isPasswordCorrect = await verifyPassword(storedHashedPassword, password);
+                    if (isPasswordCorrect) {
+                        // Correct Password
+                        dispatch(logIn(userData));
+                        navigate('/');
+                    }
+                    else {
+                        // Incorrect Password
+                        dispatch(logOut());
+                    }
+                }
+                else {
+
+                    // CAPTCHA Verification
+                    userAuthService.reCaptchaVerifier('signInButton');
+
+                    // Send verification code to the user's phone number.
+                    await userAuthService.sendVerificationCode(cleanedPhoneNumber);
+
+                    dispatch(logIn(userData));
+                    navigate('/verification');
+                }
             }
-            else{
+            else {
                 dispatch(logOut());
             }
-        } catch (error) {
-            throw error;
         }
+
     }
 
     return (
@@ -62,50 +126,63 @@ function SignIn() {
 
                         {/* Email */}
                         <div className='flex flex-col gap-1'>
-                            <label htmlFor="userEmailOrNumber" className='font-medium text-sm'>Email or mobile phone number</label>
+                            <label htmlFor="signInUserEmail" className='font-medium text-sm'>Email</label>
                             <input
                                 type="text"
-                                name="UserEmailOrNumber"
-                                id="userEmailOrNumber"
-                                className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow'
+                                name="SignInUserEmail"
+                                id="signInUserEmail"
+                                className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow disabled:cursor-no-drop'
                                 style={{}}
-                                placeholder='Email or mobile phone number'
+                                placeholder='Email'
                                 autoFocus
+                                disabled={mobileNumber.length ? true : false}
                                 required
                                 onChange={(event) => { setEmail(event.target.value) }}
                             />
                         </div>
 
-                        {/* Password */}
-                        <div className='flex flex-col gap-1 mt-[1rem]'>
-                            <label htmlFor="userPassword" className='font-medium text-sm'>Password</label>
+                        {/* Separation */}
+                        <div className='mt-[1rem] flex items-center'>
+                            <span className='flex-grow h-[2px] bg-[#F3F3F3]'></span>
+                            <span className='px-2 text-xs' style={{ color: "#767676" }}>or</span>
+                            <span className='flex-grow h-[2px] bg-[#F3F3F3]'></span>
+                        </div>
+
+                        {/* Mobile Number */}
+                        <div className='flex flex-col gap-1 mt-4'>
+                            <label htmlFor="signInUserNumber" className='font-medium text-sm'>Mobile phone number</label>
                             <input
-                                type="password"
-                                name="Password"
-                                id="userPassword"
-                                placeholder='Password'
-                                className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow'
+                                type="text"
+                                name="SignInUserNumber"
+                                id="signInUserNumber"
+                                className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow disabled:cursor-no-drop'
+                                style={{}}
+                                placeholder='e.g., +91 9876543210'
+                                autoFocus
                                 required
-                                onChange={(event) => { setPassword(event.target.value) }}
+                                disabled={email.length ? true : false}
+                                onChange={(event) => { setMobileNumber(event.target.value) }}
                             />
                         </div>
 
-                        {/* Separation */}
-                        <div className='mt-[1rem] flex items-center'>
-                            <span className='flex-grow' style={{ height: "2px", backgroundColor: "#F3F3F3", width: "10px" }}></span>
-                            <span className='px-2 text-xs' style={{ color: "#767676" }}>or</span>
-                            <span className='flex-grow' style={{ height: "2px", backgroundColor: "#F3F3F3", width: "10px" }}></span>
-                        </div>
-
-                        {/* OTP */}
-                        <div className='mt-[1rem] flex items-center mb-2'>
-                            <button className='w-full rounded-md text-sm py-1.5 ' style={{ border: "2px solid #F3F3F3", boxShadow: "0px 0px 2px gray" }}>Get an OTP on your phone</button>
+                        {/* Password */}
+                        <div className='flex flex-col gap-1 mt-[1rem]'>
+                            <label htmlFor="signInUserPassword" className='font-medium text-sm'>Password</label>
+                            <input
+                                type="password"
+                                name="SignInPassword"
+                                id="signInUserPassword"
+                                placeholder='Password'
+                                className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow disabled:cursor-no-drop'
+                                required={email.length ? true : false}
+                                onChange={(event) => { setPassword(event.target.value) }}
+                            />
                         </div>
 
 
                         {/* Button */}
                         <div className='flex justify-center mt-[1.5rem]'>
-                            <button type='submit' className='bg-yellow-400 hover:bg-yellow-500 text-black py-1.5 w-full text-sm rounded-md font-medium'>Continue</button>
+                            <button id='signInButton' type='submit' className='bg-yellow-400 hover:bg-yellow-500 text-black py-1.5 w-full text-sm rounded-md font-medium'>{mobileNumber.length ? (password.length ? "Continue" : "Verify Mobile Number") : "Continue"}</button>
                         </div>
 
                         {/* Text */}

@@ -1,8 +1,31 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import amazonLogo from '../../assets/AmazonLogoBlack_1024x576.png'
+import userAuthService from '../../firebase/UserAuthentication'
+import { useSelector } from 'react-redux'
 
 function Verification() {
+
+    const [otp, setOTP] = useState("");
+    const navigate = useNavigate();
+
+    const userData = useSelector((state) => state.userAuth.userData);
+    const userName = userData?.name;
+
+    // User Authentication using Phone Number.
+    async function handleSubmit(event) {
+        event.preventDefault();
+
+        try {
+            await userAuthService.signInWithVerificationCode(otp);
+            await userAuthService.updateUserProfile(userName);
+            navigate('/');
+            
+        } catch (error) {
+            throw error;
+        }
+    }
+
     return (
         <>
             <div className='bg-white flex flex-col justify-between' style={{ minHeight: "100vh" }}>
@@ -20,26 +43,28 @@ function Verification() {
                 {/* User Details */}
                 <div className='flex justify-center' >
 
-                    <form className='pt-2 px-5 rounded-md' style={{ width: "min(400px, 90vw)", border: "1px solid #A6A6A6" }}>
-                        <h2 className='text-3xl font-medium mb-[1.5rem]'>Verify email address</h2>
+                    <form onSubmit={handleSubmit} className='pt-2 px-5 rounded-md' style={{ width: "min(400px, 90vw)", border: "1px solid #A6A6A6" }}>
+                        <h2 className='text-xl sm:text-3xl font-medium mb-[1.5rem] text-center'>Verify phone number</h2>
 
                         <div className='text-sm'>
-                            <p>To verify your email, we've sent a One TIme Password (OTP) to example@gmail.com.</p>
+                            <p>To verify your phone number, we've sent a One-Time-Password (OTP) to 987654****.</p>
                         </div>
 
 
                         {/* Verification Code */}
                         <div className='flex flex-col gap-1 mt-[1rem]'>
-                            <label htmlFor="userEmailOrNumber" className='font-medium text-sm'>Enter One Time Password (OTP)</label>
+                            <label htmlFor="code" className='font-medium text-sm'>Enter One-Time-Password (OTP)</label>
                             <input
                                 type="text"
-                                name="UserEmailOrNumber"
-                                id="userEmailOrNumber"
+                                name="OTP"
+                                id="code"
                                 className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow'
                                 style={{}}
                                 placeholder='OTP'
                                 autoFocus
-                                required />
+                                required 
+                                onChange={(event) => setOTP(event.target.value)}
+                                />
                         </div>
 
 
@@ -70,12 +95,12 @@ function Verification() {
 
                             <div className='mt-[0.5rem]'>
                                 <p>
-                                    <span className='font-medium'>Note:</span> If you didn't receive our verification email
+                                    <span className='font-medium'>Note:</span> If you didn't receive our verification code
 
                                 </p>
                                 <ul className='list-disc list-inside'>
-                                    <li>Confirm that your email address was entered correctly.</li>
-                                    <li>Check your spam or junk email folder.</li>
+                                    <li>Confirm that your phone number was entered correctly.</li>
+                                    <li>Check your spam or junk folder.</li>
                                 </ul>
                             </div>
                         </div>
