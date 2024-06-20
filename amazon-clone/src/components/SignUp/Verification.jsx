@@ -12,14 +12,6 @@ function Verification() {
     const userData = useSelector((state) => state.userAuth.userData);
     const userName = userData?.name;
     const mobileNumber = userData?.phoneNumber;
-    const [number, setNumber] = useState("");
-
-    useEffect(() => {
-        if (mobileNumber) {
-            const temp = mobileNumber.substring(0, mobileNumber.length - 4) + "****";
-            setNumber(temp);
-        }
-    }, [mobileNumber])
 
     // User Authentication using Phone Number.
     async function handleSubmit(event) {
@@ -56,7 +48,7 @@ function Verification() {
                         <h2 className='text-xl sm:text-3xl font-medium mb-[1.5rem] text-center'>Verify phone number</h2>
 
                         <div className='text-sm'>
-                            <p>To verify your phone number, we've sent a One-Time-Password (OTP) to {number}</p>
+                            <p>To verify your phone number, we've sent a One-Time-Password (OTP) to {mobileNumber}</p>
                         </div>
 
 
