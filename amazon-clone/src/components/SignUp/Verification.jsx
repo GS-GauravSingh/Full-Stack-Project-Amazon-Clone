@@ -1,56 +1,26 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import amazonLogo from '../../assets/AmazonLogoBlack_1024x576.png'
-import userAuthService from '../../firebase/UserAuthentication';
-import { useDispatch, useSelector } from 'react-redux'
-import { logIn, logOut } from '../../redux/userAuthSlice';
+import userAuthService from '../../firebase/UserAuthentication'
+import { useSelector } from 'react-redux'
 
 function Verification() {
 
-    // `useNavigate()` is a hook provided by React-Router-Dom and it is used to programatically redirect the user.
+    const [otp, setOTP] = useState("");
     const navigate = useNavigate();
 
-    // Storing user information and status in Redux Store.
-    const dispatch = useDispatch();
-
-    const [OTP, setOTP] = useState();
-
-    const userData = useSelector(state => state.userAuth.userData);
-    const mobileNumber = userData?.phoneNumber;
+    const userData = useSelector((state) => state.userAuth.userData);
     const userName = userData?.name;
 
-    // Create user account - when user click on 'create your amazon account' button.
+    // User Authentication using Phone Number.
     async function handleSubmit(event) {
-
         event.preventDefault();
 
         try {
-            // Step 1: Verify reCaptch.
-            userAuthService.reCaptchaVerifier("createAmazonAccountBtnId");
-
-            // Step 2: send the verification code to the user's mobile number.
-            await userAuthService.createAccountWithPhoneNumber(mobileNumber);
-
-            // Step 3: Verify the One-Time-Password sent to the user's mobile number.
-            const userCredentials = await userAuthService.verifyOTP(OTP);
-
-            if (userCredentials) {
-                // Account created successfully.
-                await userAuthService.updateUserProfile(userName);
-
-                const userData = {
-                    name: userCredentials.user.displayName,
-                    email: userCredentials.user.email,
-                    phoneNumber: userCredentials.user.phoneNumber,
-                };
-
-                dispatch(logIn(userData));
-                navigate("/");
-            }
-            else {
-                dispatch(logOut());
-                console.log("Error :: handleSubmit() ::  Verification.jsx");
-            }
+            await userAuthService.signInWithVerificationCode(otp);
+            await userAuthService.updateUserProfile(userName);
+            navigate('/');
+            
         } catch (error) {
             throw error;
         }
@@ -73,31 +43,28 @@ function Verification() {
                 {/* User Details */}
                 <div className='flex justify-center' >
 
-                    <form
-                        onSubmit={handleSubmit}
-                        className='pt-2 px-5 rounded-md'
-                        style={{ width: "min(400px, 90vw)", border: "1px solid #A6A6A6" }}>
-                        <h2 className='text-3xl font-medium mb-[1.5rem]'>Verify phone number</h2>
+                    <form onSubmit={handleSubmit} className='pt-2 px-5 rounded-md' style={{ width: "min(400px, 90vw)", border: "1px solid #A6A6A6" }}>
+                        <h2 className='text-xl sm:text-3xl font-medium mb-[1.5rem] text-center'>Verify phone number</h2>
 
                         <div className='text-sm'>
-                            <p>To verify your phone number, we've sent a One TIme Password (OTP) to your number.</p>
+                            <p>To verify your phone number, we've sent a One-Time-Password (OTP) to 987654****.</p>
                         </div>
 
 
                         {/* Verification Code */}
                         <div className='flex flex-col gap-1 mt-[1rem]'>
-                            <label htmlFor="userEmailOrNumber" className='font-medium text-sm'>Enter One Time Password (OTP)</label>
+                            <label htmlFor="code" className='font-medium text-sm'>Enter One-Time-Password (OTP)</label>
                             <input
                                 type="text"
-                                name="UserEmailOrNumber"
-                                id="userEmailOrNumber"
+                                name="OTP"
+                                id="code"
                                 className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow'
                                 style={{}}
                                 placeholder='OTP'
                                 autoFocus
-                                required
+                                required 
                                 onChange={(event) => setOTP(event.target.value)}
-                            />
+                                />
                         </div>
 
 
@@ -128,7 +95,7 @@ function Verification() {
 
                             <div className='mt-[0.5rem]'>
                                 <p>
-                                    <span className='font-medium'>Note:</span> If you didn't receive our verification email
+                                    <span className='font-medium'>Note:</span> If you didn't receive our verification code
 
                                 </p>
                                 <ul className='list-disc list-inside'>

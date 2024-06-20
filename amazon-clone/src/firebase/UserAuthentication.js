@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth'
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore'
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, RecaptchaVerifier, signInWithPhoneNumber, setPersistence, browserLocalPersistence } from 'firebase/auth'
 import firebaseConfigurations from '../firebaseConfigurations/firebaseConfigurations'
 
 // Quality Code - Wrap functionalities inside a class.
@@ -8,6 +9,7 @@ class UserAuthenticationService {
     // Properties or Data Members of 'UserAuthenticationService' class.
     app;
     auth;
+    database;
 
     // Behavior or Member Functions of 'UserAuthenticationService' class.
     // Constructor
@@ -17,6 +19,9 @@ class UserAuthenticationService {
 
         // Initialize Firebase Authentication and get a reference to the service
         this.auth = getAuth(this.app);
+
+        // Initialize Cloud Firestore and get a reference to the service
+        this.database = getFirestore(this.app);
     }
 
     // Sign up new users
@@ -96,24 +101,36 @@ class UserAuthenticationService {
         }
     }
 
-    // User Authentication with Mobile Number.
-    async reCaptchaVerifier(submitBtnId) {
-        // 'window' is a global object and here we are creating out own property in window object named 'recaptchaVerifier'. Storing the response of the 'RecaptchaVerifier()' function.
-        window.recaptchaVerifier = new RecaptchaVerifier(this.auth, String(submitBtnId), {
+    // Phone Number Authentication - Code Starts from here.
+
+    //  reCAPTCHA Verifier
+    reCaptchaVerifier(btnID) {
+
+        this.auth.languageCode = 'it';
+
+        // See, window is a global object and here we are creating a 'key' named as 'recaptchaVerifier'.
+        window.recaptchaVerifier = new RecaptchaVerifier(this.auth, `${btnID}`, {
             'size': 'invisible',
-            'callback': async (response) => {
+            'callback': (response) => {
                 // reCAPTCHA solved, allow signInWithPhoneNumber.
-                // console.log("Inside reCaptchVerifier");
+                // console.log("reCAPTCHA solved, allow signInWithPhoneNumber");
                 // console.log(response);
+            },
+            'expired-callback': () => {
+                // Response expired. Ask user to solve reCAPTCHA again.
+                // console.warn("reCAPTCHA expired. Please solve it again.");
             }
         })
     }
 
-    async createAccountWithPhoneNumber(phoneNumber) {
+    // Send Verification Code (OTP) to user's phone number.
+    async sendVerificationCode(phoneNumber) {
+
         try {
             const appVerifier = window.recaptchaVerifier;
 
-            // 'window' is a global object and here we are creating out own property in window object named 'confirmationResult'.
+            // SMS sent. Prompt user to type the code from the message, then sign the
+            // user in with confirmationResult.confirm(code).
             window.confirmationResult = await signInWithPhoneNumber(this.auth, phoneNumber, appVerifier);
 
         } catch (error) {
@@ -121,23 +138,51 @@ class UserAuthenticationService {
         }
     }
 
-    // Sign in the user with the verification code.
-    async verifyOTP(OTP) {
+    // Sign in the user with the verification code
+    async signInWithVerificationCode(code) {
         try {
-            const user = await window.confirmationResult.confirm(OTP);
-            if (user) {
+            const result = await window.confirmationResult.confirm(code);
+            if (result) {
                 // User signed in successfully.
-                return user;
-            }
-            else {
-                console.log("Error :: createAccountWithPhoneNumber() :: Account not created.");
+                return result.user;
             }
         } catch (error) {
+            // User couldn't sign in (bad verification code?)
             throw error;
-
         }
     }
 
+    // Storing user authentication data in firebase firestore.
+    async storeDataInFirestore(userName, phoneNumber, password) {
+        try {
+            // Add a new document in collection "UsersAuthenticationData"
+            // Collection Name: "UsersAuthenticationData"
+            await setDoc(doc(this.database, "UsersAuthenticationData", `${phoneNumber}`), {
+                userName: `${userName}`,
+                phoneNumber: `${phoneNumber}`,
+                password: `${password}`
+            })
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Getting user authentication data from firebase firestore.
+    async getDataFromFirestore(phoneNumber) {
+        try {
+            const documentRef = doc(this.database, "UsersAuthenticationData", `${phoneNumber}`);
+            const documentSnap = await getDoc(documentRef);
+
+            if (documentSnap.exists()) {
+                return documentSnap.data();
+            }
+            else {
+                return null;
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 // Object Creation.

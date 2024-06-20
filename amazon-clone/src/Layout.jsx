@@ -1,13 +1,42 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { DesktopHeader, MobileHeader, Footer, FooterSignIn } from './components'
 import { Outlet } from "react-router-dom"
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { logIn, logOut } from './redux/userAuthSlice'
+import userAuthService from './firebase/UserAuthentication'
 
 
 function Layout() {
+    
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        // Maintaining redux state when browser refreshes.
+        async function getCurrentUser() {
+            try {
+                const userCredentials = await userAuthService.getCurrentUser();
+                if (userCredentials) {
+                    const userData = {
+                        name: userCredentials.displayName,
+                        email: userCredentials.email,
+                        phoneNumber: ""
+                    };
+                    dispatch(logIn(userData));
+                }
+                else{
+                    dispatch(logOut());
+                }
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        getCurrentUser();
+
+    }, [])
 
     const authStatus = useSelector((state) => state.userAuth.status);
-    
+
     return (
 
         <>

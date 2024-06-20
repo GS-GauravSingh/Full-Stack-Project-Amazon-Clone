@@ -4,6 +4,8 @@ import amazonLogo from '../../assets/AmazonLogoBlack_1024x576.png'
 import userAuthService from '../../firebase/UserAuthentication';
 import { useDispatch, useSelector } from 'react-redux'
 import { logIn, logOut } from '../../redux/userAuthSlice';
+import { parsePhoneNumberFromString } from 'libphonenumber-js'
+import bcrypt from 'bcryptjs'
 
 
 function SignUp() {
@@ -18,7 +20,7 @@ function SignUp() {
             .then(response => setCountryCode(response))
             .catch(error => console.log(error))
     }, [])
-    const [selectedCode, setSelectedCode] = useState("India")
+    const [selectedCode, setSelectedCode] = useState("IN")
 
     const [userName, setUserName] = useState("");
     const [mobileNumber, setMobileNumber] = useState("");
@@ -31,25 +33,40 @@ function SignUp() {
     // Storing user information and status in Redux Store.
     const dispatch = useDispatch();
 
+    // Converting Phone number in E.164 format using "libphonenumber-js" library.
+    function formatPhoneNumber(phoneNumber, countryCode) {
+        const obj = parsePhoneNumberFromString(`${phoneNumber}`, `${countryCode}`);
+        if (obj && obj.isValid()) {
+            return obj.format('E.164');
+        }
+        return null;
+    }
+
+    // Function to encrypt user password.
+    async function hashPassword(password) {
+        try {
+            const saltRounds = 10;
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+            return hashedPassword;
+        } catch (error) {
+            throw error;
+        }
+    }
+
 
     // Function to handle form submition.
     async function handleSubmit(event) {
 
         event.preventDefault();
 
-        // If user wants to create an account using phone number - then we simply redirect the user to the verification components, where we handle the account creation. But, before navigation, don't forget to store the user's mobile number in the redux store.
-        if (mobileNumber.length) {
-            const userData = {
-                name: userName,
-                email: email,
-                phoneNumber: mobileNumber,
-            };
-            dispatch(logIn(userData));
-            navigate("/verification")
-        }
+        /*
+        Importtant Note: When a user registers and signs in with email and password using Firebase Authentication, Firebase automatically handles the persistence of the user's authentication state. This is because Firebase Authentication by default uses local persistence, meaning the user remains signed in even after the browser is closed and reopened.
 
-        else if(email.length) {
-            // Creating account using email and password.
+        For phone number authentication with OTP, the process is similar, but you need to ensure that the authentication state is correctly managed and persisted.
+        */
+
+        // If user wants to create an account using email.
+        if (email.length) {
             try {
                 const userCredentials = await userAuthService.createAccount({ userName, email, password });
 
@@ -58,7 +75,7 @@ function SignUp() {
                     const userData = {
                         name: userCredentials.user.displayName,
                         email: userCredentials.user.email,
-                        phoneNumber: userCredentials.user.phoneNumber,
+                        phoneNumber: ""
                     };
 
                     dispatch(logIn(userData));
@@ -74,6 +91,39 @@ function SignUp() {
         }
 
 
+        // If user wants to create an account using phone number.
+        else if (mobileNumber.length) {
+
+            const formatNumber = formatPhoneNumber(mobileNumber.trim(), selectedCode);
+            if (formatNumber) {
+
+                const userData = {
+                    name: userName,
+                    email: email,
+                    phoneNumber: formatNumber
+                };
+
+                // Additional Step, store user authentication details in the firebase firestore.
+                const encryptedPassword = await hashPassword(password);
+                userAuthService.storeDataInFirestore(userName, formatNumber, encryptedPassword);
+
+                // CAPTCHA Verification
+                userAuthService.reCaptchaVerifier('createAccountBtn');
+
+                // Send verification code to the user's phone number.
+                await userAuthService.sendVerificationCode(formatNumber);
+
+                dispatch(logIn(userData));
+                navigate('/verification');
+            }
+            else {
+                // Not a valid Number.
+                console.error('Not a valid number');
+            }
+        }
+        else {
+            dispatch(logOut());
+        }
     }
 
     return (
@@ -102,11 +152,11 @@ function SignUp() {
 
                         {/* User Name */}
                         <div className='flex flex-col gap-1'>
-                            <label htmlFor="userName" className='font-medium text-sm'>Your Name</label>
+                            <label htmlFor="signUpUserName" className='font-medium text-sm'>Your Name</label>
                             <input
                                 type="text"
-                                name="UserName"
-                                id="userName"
+                                name="SignUpUserName"
+                                id="signUpUserName"
                                 value={userName}
                                 className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow'
                                 style={{}}
@@ -120,7 +170,7 @@ function SignUp() {
 
                         {/* Mobile Number */}
                         <div className='flex flex-col gap-1 mt-[1rem]'>
-                            <label htmlFor="userMobileNumber" className='font-medium text-sm'>Mobile number</label>
+                            <label htmlFor="signUpUserMobileNumber" className='font-medium text-sm'>Mobile number</label>
                             <div className='flex flex-col gap-4'>
 
                                 {/* Country Code */}
@@ -136,7 +186,7 @@ function SignUp() {
                                     {
                                         countryCode.map((obj, idx) => {
                                             return (
-                                                <option key={idx} value={obj.name} disabled={(email.length ? true : false)}>
+                                                <option key={idx} value={obj.code} disabled={(email.length ? true : false)}>
                                                     {`${obj.name} ${obj.dial_code}`}
                                                 </option>
                                             )
@@ -147,9 +197,9 @@ function SignUp() {
                                 {/* Input */}
                                 <input
                                     type="text"
-                                    name="UserMobileNumber"
-                                    id="userMobileNumber"
-                                    className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow'
+                                    name="SignUpUserMobileNumber"
+                                    id='signUpUserMobileNumber'
+                                    className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow disabled:cursor-no-drop'
                                     value={mobileNumber}
                                     placeholder='Mobile number'
                                     required
@@ -169,12 +219,12 @@ function SignUp() {
 
                         {/* Email */}
                         <div className='flex flex-col gap-1 mt-[1rem]'>
-                            <label htmlFor="userEmailOrNumber" className='font-medium text-sm'>Email</label>
+                            <label htmlFor="signUpUserEmail" className='font-medium text-sm'>Email</label>
                             <input
                                 type="text"
-                                name="UserEmailOrNumber"
-                                id="userEmailOrNumber"
-                                className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow'
+                                name="SignUpUserEmail"
+                                id="signUpUserEmail"
+                                className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow disabled:cursor-no-drop'
                                 value={email}
                                 placeholder='Email'
                                 required
@@ -187,11 +237,11 @@ function SignUp() {
 
                         {/* Password */}
                         <div className='flex flex-col gap-1 mt-[1rem]'>
-                            <label htmlFor="userPassword" className='font-medium text-sm'>Create a new password</label>
+                            <label htmlFor="signUpUserPassword" className='font-medium text-sm'>Create a new password</label>
                             <input
                                 type="password"
-                                name="Password"
-                                id="userPassword"
+                                name="SignUpPassword"
+                                id="signUpUserPassword"
                                 value={password}
                                 className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow'
                                 required
@@ -202,12 +252,12 @@ function SignUp() {
 
                         {/* Text */}
                         <div className='mt-[1rem]'>
-                            <p className='text-sm'>To verify your number, we will send you a text message with a temporary code. Message and data rates may apply. You can directly create your Amazon Account using your email address, no verification in case of email address.</p>
+                            <p className='text-sm'>To verify your number, we will send you a text message with a temporary code. Message and data rates may apply. You can directly create your Amazon Account using your email address, no verification code sent in case of email address.</p>
                         </div>
 
-                        {/* Button */}
+                        {/* Button - Create Account */}
                         <div className='flex justify-center mt-[1rem] pb-[1.5rem]' style={{ borderBottom: "1px solid #E7E7E7" }}>
-                            <button type='submit' className='bg-yellow-400 hover:bg-yellow-500 text-black py-1.5 w-full text-sm rounded-md font-medium'> {(mobileNumber.length ? "Verify mobile number" : "Create your Amazon Account")} </button>
+                            <button id='createAccountBtn' type='submit' className='bg-yellow-400 hover:bg-yellow-500 text-black py-1.5 w-full text-sm rounded-md font-medium'> {(mobileNumber.length ? "Verify mobile number" : "Create your Amazon Account")} </button>
                         </div>
 
                         {/* Text */}
