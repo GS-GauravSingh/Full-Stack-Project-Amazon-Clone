@@ -84,7 +84,7 @@ function SignUp() {
                 };
 
                 // Additional Step, store user authentication details in the firebase firestore.
-                // userAuthService.storeDataInFirestore(userName, formatNumber, password);
+                userAuthService.storeDataInFirestore(userName, formatNumber);
 
                 // CAPTCHA Verification
                 userAuthService.reCaptchaVerifier('createAccountBtn');

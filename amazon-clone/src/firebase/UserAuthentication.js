@@ -153,7 +153,7 @@ class UserAuthenticationService {
     }
 
     // Storing user authentication data in firebase firestore.
-    async storeDataInFirestore(userName, phoneNumber, password) {
+    async storeDataInFirestore(userName, phoneNumber, password = "") {
         try {
             // Add a new document in collection "UsersAuthenticationData"
             // Collection Name: "UsersAuthenticationData"
