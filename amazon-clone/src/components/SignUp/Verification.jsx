@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import amazonLogo from '../../assets/AmazonLogoBlack_1024x576.png'
 import userAuthService from '../../firebase/UserAuthentication'
@@ -11,6 +11,15 @@ function Verification() {
 
     const userData = useSelector((state) => state.userAuth.userData);
     const userName = userData?.name;
+    const mobileNumber = userData?.phoneNumber;
+    const [number, setNumber] = useState("");
+
+    useEffect(() => {
+        if (mobileNumber) {
+            const temp = mobileNumber.substring(0, mobileNumber.length - 4) + "****";
+            setNumber(temp);
+        }
+    }, [mobileNumber])
 
     // User Authentication using Phone Number.
     async function handleSubmit(event) {
@@ -20,7 +29,7 @@ function Verification() {
             await userAuthService.signInWithVerificationCode(otp);
             await userAuthService.updateUserProfile(userName);
             navigate('/');
-            
+
         } catch (error) {
             throw error;
         }
@@ -47,7 +56,7 @@ function Verification() {
                         <h2 className='text-xl sm:text-3xl font-medium mb-[1.5rem] text-center'>Verify phone number</h2>
 
                         <div className='text-sm'>
-                            <p>To verify your phone number, we've sent a One-Time-Password (OTP) to 987654****.</p>
+                            <p>To verify your phone number, we've sent a One-Time-Password (OTP) to {number}</p>
                         </div>
 
 
@@ -62,9 +71,9 @@ function Verification() {
                                 style={{}}
                                 placeholder='OTP'
                                 autoFocus
-                                required 
+                                required
                                 onChange={(event) => setOTP(event.target.value)}
-                                />
+                            />
                         </div>
 
 
