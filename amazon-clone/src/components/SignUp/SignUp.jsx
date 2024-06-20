@@ -5,8 +5,6 @@ import userAuthService from '../../firebase/UserAuthentication';
 import { useDispatch, useSelector } from 'react-redux'
 import { logIn, logOut } from '../../redux/userAuthSlice';
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
-import bcrypt from 'bcryptjs'
-
 
 function SignUp() {
 
@@ -42,28 +40,10 @@ function SignUp() {
         return null;
     }
 
-    // Function to encrypt user password.
-    async function hashPassword(password) {
-        try {
-            const saltRounds = 10;
-            const hashedPassword = await bcrypt.hash(password, saltRounds);
-            return hashedPassword;
-        } catch (error) {
-            throw error;
-        }
-    }
-
-
     // Function to handle form submition.
     async function handleSubmit(event) {
 
         event.preventDefault();
-
-        /*
-        Importtant Note: When a user registers and signs in with email and password using Firebase Authentication, Firebase automatically handles the persistence of the user's authentication state. This is because Firebase Authentication by default uses local persistence, meaning the user remains signed in even after the browser is closed and reopened.
-
-        For phone number authentication with OTP, the process is similar, but you need to ensure that the authentication state is correctly managed and persisted.
-        */
 
         // If user wants to create an account using email.
         if (email.length) {
@@ -104,8 +84,7 @@ function SignUp() {
                 };
 
                 // Additional Step, store user authentication details in the firebase firestore.
-                const encryptedPassword = await hashPassword(password);
-                userAuthService.storeDataInFirestore(userName, formatNumber, encryptedPassword);
+                // userAuthService.storeDataInFirestore(userName, formatNumber, password);
 
                 // CAPTCHA Verification
                 userAuthService.reCaptchaVerifier('createAccountBtn');

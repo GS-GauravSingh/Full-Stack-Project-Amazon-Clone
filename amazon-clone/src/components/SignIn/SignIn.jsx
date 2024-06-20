@@ -4,9 +4,6 @@ import amazonLogo from '../../assets/AmazonLogoBlack_1024x576.png'
 import userAuthService from '../../firebase/UserAuthentication'
 import { useDispatch } from 'react-redux'
 import { logIn, logOut } from '../../redux/userAuthSlice'
-import bcrypt from 'bcryptjs'
-
-
 
 
 function SignIn() {
@@ -16,16 +13,6 @@ function SignIn() {
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
-    // Function to verify password hashedPassword with password entered by user.
-    async function verifyPassword(hashedPassword, userEnteredPassword){
-        try {
-            const match = await bcrypt.compare(userEnteredPassword, hashedPassword);
-            return match;
-        } catch (error) {
-            throw error;
-        }
-    }
 
     // Funciton to handle when user submit the sign in form.
     async function handleSubmit(event) {
@@ -67,31 +54,14 @@ function SignIn() {
                     phoneNumber: mobileNumber
                 };
 
-                // If user entered the password.
-                if (password.length) {
-                    const storedHashedPassword = document.password;
-                    const isPasswordCorrect = await verifyPassword(storedHashedPassword, password);
-                    if (isPasswordCorrect) {
-                        // Correct Password
-                        dispatch(logIn(userData));
-                        navigate('/');
-                    }
-                    else {
-                        // Incorrect Password
-                        dispatch(logOut());
-                    }
-                }
-                else {
+                // CAPTCHA Verification
+                userAuthService.reCaptchaVerifier('signInButton');
 
-                    // CAPTCHA Verification
-                    userAuthService.reCaptchaVerifier('signInButton');
+                // Send verification code to the user's phone number.
+                await userAuthService.sendVerificationCode(cleanedPhoneNumber);
 
-                    // Send verification code to the user's phone number.
-                    await userAuthService.sendVerificationCode(cleanedPhoneNumber);
-
-                    dispatch(logIn(userData));
-                    navigate('/verification');
-                }
+                dispatch(logIn(userData));
+                navigate('/verification');
             }
             else {
                 dispatch(logOut());
@@ -141,6 +111,21 @@ function SignIn() {
                             />
                         </div>
 
+                        {/* Password */}
+                        <div className='flex flex-col gap-1 mt-[1rem]'>
+                            <label htmlFor="signInUserPassword" className='font-medium text-sm'>Password</label>
+                            <input
+                                type="password"
+                                name="SignInPassword"
+                                id="signInUserPassword"
+                                placeholder='Password'
+                                className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow disabled:cursor-no-drop'
+                                required={email.length ? true : false}
+                                disabled={mobileNumber.length ? true : false}
+                                onChange={(event) => { setPassword(event.target.value) }}
+                            />
+                        </div>
+
                         {/* Separation */}
                         <div className='mt-[1rem] flex items-center'>
                             <span className='flex-grow h-[2px] bg-[#F3F3F3]'></span>
@@ -162,20 +147,6 @@ function SignIn() {
                                 required
                                 disabled={email.length ? true : false}
                                 onChange={(event) => { setMobileNumber(event.target.value) }}
-                            />
-                        </div>
-
-                        {/* Password */}
-                        <div className='flex flex-col gap-1 mt-[1rem]'>
-                            <label htmlFor="signInUserPassword" className='font-medium text-sm'>Password</label>
-                            <input
-                                type="password"
-                                name="SignInPassword"
-                                id="signInUserPassword"
-                                placeholder='Password'
-                                className='rounded-sm pl-2 text-sm py-1 outline-none border-[1px] border-[#A6A6A6] focus:border-[1.5px] focus:border-[#007185] focus:shadow-signUpInputBoxShadow disabled:cursor-no-drop'
-                                required={email.length ? true : false}
-                                onChange={(event) => { setPassword(event.target.value) }}
                             />
                         </div>
 
